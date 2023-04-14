@@ -3,7 +3,7 @@ import pprint
 #from skimage.draw.draw import disk, line, polygon
 
 # Parameters
-video_channel = 4
+video_channel = 0
 window_name = "Input"
 
 def mouse_callback(event, x, y, flags, param):
