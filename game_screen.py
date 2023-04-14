@@ -1,4 +1,4 @@
-import pygame
+import os, pygame
 from math import pi
 
 MAX_FORWARD = 30
@@ -6,8 +6,11 @@ MAX_ANGULAR = pi/3
 
 class GameScreen:
     def __init__(self, width, height):
+
+        os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
         pygame.init()
-        self.screen = pygame.display.set_mode((width, height))
+        self.screen = pygame.display.set_mode((width, height), flags=pygame.SCALED)
+        pygame.display.toggle_fullscreen()
         self.delta_time = 1
         self.terminate = False
 
@@ -43,11 +46,11 @@ class GameScreen:
 
         for pose in robot_poses:
             centre = pygame.Vector2(pose[0], pose[1])
-            pygame.draw.circle(self.screen, "purple", centre, 80, width=1)
+            pygame.draw.circle(self.screen, "purple", centre, 50, width=2)
 
         for pos in guide_positions:
             centre = pygame.Vector2(pos[0], pos[1])
-            pygame.draw.circle(self.screen, "white", centre, 40)
+            pygame.draw.circle(self.screen, "white", centre, 20)
 
         # flip() the display to put your work on screen
         pygame.display.flip()

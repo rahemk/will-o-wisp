@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     apriltag_detector = Detector(
        families="tag36h11",
-       nthreads=1,
+       nthreads=6,
        quad_decimate=1.0,
        quad_sigma=0.0,
        refine_edges=1,
@@ -84,7 +84,7 @@ if __name__ == "__main__":
             # as being in the forwards direction, relative to corner 1.
             x = tag.corners[0,0] - tag.corners[1,0]
             y = tag.corners[0,1] - tag.corners[1,1]
-            tag_angle = atan2(y, x)
+            tag_angle = atan2(y, x) + pi/2
             #cv2.putText(raw_image, str(theta), (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
 
             robot_poses.append((cx, cy, tag_angle))
