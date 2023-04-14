@@ -1,0 +1,11 @@
+{
+    "video_channel": 4,
+    "manual_mode": 1,
+    "output_width": 1280,
+    "output_height": 720,
+    "upper_left": [574, 380],
+    "upper_right": [61, 378],
+    "lower_right": [55, 83],
+    "lower_left": [582, 85],
+    "guide_displacement": [0, 0]
+}
