@@ -21,7 +21,11 @@ if __name__ == "__main__":
         screen_corners.append( config_dict['upper_right'] )
         screen_corners.append( config_dict['lower_right'] )
         screen_corners.append( config_dict['lower_left'] )
-        guide_displacement = config_dict['guide_displacement']
+        guide_displacement_dict = {
+            "left": [config_dict['left_guide_displacement']],
+            "forward": [config_dict['left_guide_displacement'], config_dict['right_guide_displacement']],
+            "right": [config_dict['right_guide_displacement']]
+        }
     except:
         print('Cannot load config: %s'% config_filename)  
 
@@ -29,7 +33,7 @@ if __name__ == "__main__":
 
     apriltag_detector = Detector(
        families="tag36h11",
-       nthreads=6,
+       nthreads=5,
        quad_decimate=1.0,
        quad_sigma=0.0,
        refine_edges=1,
@@ -62,9 +66,9 @@ if __name__ == "__main__":
 
         tags = apriltag_detector.detect(gray_image)
 
-        forward, angular = (0, 0)
+        movement = ""
         if manual_mode == 1:
-            forward, angular = game_screen.get_movement()
+            movement = game_screen.get_movement()
         else:
             # Compute a dictionary of the desired movements for all tags.  Tags
             # not corresponding to active robots will not have an entry.
@@ -90,24 +94,22 @@ if __name__ == "__main__":
             robot_poses.append((cx, cy, tag_angle))
 
             #forward, angular = movement_dict[tag['tag_id']]
-            if abs(forward) > 0 or abs(angular) > 0:
-                # If the movement is non-zero, place a thumbnail on the screen.
-                # to guide the robot.
-                theta = tag_angle + angular
+            c = cos(tag_angle)
+            s = sin(tag_angle)
+            if movement != "":
+                for guide_displacement in guide_displacement_dict[movement]:
+                    print(guide_displacement)
+                    # Movement vector relative to robot frame.
+                    Rx = guide_displacement[0]
+                    Ry = guide_displacement[1]
 
-                # Movement vector relative to robot frame.
-                Rx = guide_displacement[0] + forward
-                Ry = guide_displacement[1]
+                    # Rotate this vector into the world frame.
+                    Wx = c * Rx - s * Ry
+                    Wy = s * Rx + c * Ry
+                    x = cx + Wx
+                    y = cy + Wy
 
-                # Rotate this vector into the world frame.
-                c = cos(theta)
-                s = sin(theta)
-                Wx = c * Rx - s * Ry
-                Wy = s * Rx + s * Ry
-                x = cx + Wx
-                y = cy + Wy
-
-                guide_positions.append((x, y))
+                    guide_positions.append((x, y))
 
         game_screen.update(robot_poses, guide_positions)
 

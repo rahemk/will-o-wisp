@@ -1,8 +1,7 @@
 import os, pygame
-from math import pi
+from math import cos, pi, sin
 
-MAX_FORWARD = 30
-MAX_ANGULAR = pi/3
+POSE_RADIUS = 65
 
 class GameScreen:
     def __init__(self, width, height):
@@ -11,29 +10,24 @@ class GameScreen:
         pygame.init()
         self.screen = pygame.display.set_mode((width, height), flags=pygame.SCALED)
         pygame.display.toggle_fullscreen()
-        self.delta_time = 1
         self.terminate = False
 
     def get_movement(self):
-        forward = 0
-        angular = 0
-
         keys = pygame.key.get_pressed()
+        result = ""
         if keys[pygame.K_UP]:
-            forward = MAX_FORWARD * self.delta_time
+            result = "forward"
         if keys[pygame.K_DOWN]:
             pass
         if keys[pygame.K_LEFT]:
-            forward = MAX_FORWARD * self.delta_time
-            angular = -MAX_ANGULAR * self.delta_time
+            result = "left"
         if keys[pygame.K_RIGHT]:
-            forward = MAX_FORWARD * self.delta_time
-            angular = MAX_ANGULAR * self.delta_time
+            result = "right"
         if keys[pygame.K_q]:
             self.terminate = True
-        print(f"forward, angular: {forward, angular}")
 
-        return forward, angular
+        print(result)
+        return result
 
     def update(self, robot_poses, guide_positions):
         # pygame.QUIT event means the user clicked X to close your window
@@ -46,11 +40,14 @@ class GameScreen:
 
         for pose in robot_poses:
             centre = pygame.Vector2(pose[0], pose[1])
-            pygame.draw.circle(self.screen, "purple", centre, 50, width=2)
+            on_circle = pygame.Vector2(pose[0] + POSE_RADIUS * cos(pose[2]), \
+                                       pose[1] + POSE_RADIUS * sin(pose[2]))
+            pygame.draw.circle(self.screen, "purple", centre, POSE_RADIUS, width=2)
+            pygame.draw.line(self.screen, "purple", centre, on_circle)
 
         for pos in guide_positions:
             centre = pygame.Vector2(pos[0], pos[1])
-            pygame.draw.circle(self.screen, "white", centre, 20)
+            pygame.draw.circle(self.screen, "white", centre, 10)
 
         # flip() the display to put your work on screen
         pygame.display.flip()
