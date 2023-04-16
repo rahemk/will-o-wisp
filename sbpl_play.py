@@ -12,6 +12,7 @@ import pysbpl
 from pysbpl import map_util, planner, plot
 from math import pi
 from random import random
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     pysbl_dir = os.path.dirname(pysbpl.__file__)
@@ -45,7 +46,7 @@ if __name__ == "__main__":
         # See http://wiki.ros.org/costmap_2d for details on the costmap
         "obs_thresh": 1,  # lethal cost
         "inscribed_thresh": 1,  # likely in collision cost
-        "possibly_circumscribed_thresh": 0,  # possibly in collision cost
+        "possibly_circumscribed_thresh": 0  # possibly in collision cost
     }
 
     sbpl_planner = planner.Planner(**params)
@@ -56,13 +57,16 @@ if __name__ == "__main__":
     #start = [10, 10, 0]
     #goal = [80, 80, 0]
     
-    for i in range(100):
+    for i in range(4):
         start = [100*random(), 100 * random(), 0]
         goal = [100*random(), 100 * random(), 0]
         path, actions = sbpl_planner.plan(start, goal, init_eps=3.0, backwards_till_solution=False)
 
-    if path is not None:
-        g = plot.Window()
-        g.display_map(params["map"])
-        g.display_path(path)
-        g.show()
+
+        if path is not None:
+            g = plot.Window()
+            g.display_map(params["map"])
+            plt.plot(start[0], start[1], 'sg')
+            plt.plot(goal[0], goal[1], 'sr')
+            g.display_path(path)
+            g.show()
