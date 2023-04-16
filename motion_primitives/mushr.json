@@ -1,0 +1,290 @@
+{
+    "(0, 10, 0, 0)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 10.0,
+        "dth": 0
+    },
+    "(0, 5, 7, 5)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": 5.0,
+        "dth": 1.9634954084936207
+    },
+    "(0, 5, -7, 11)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": 5.0,
+        "dth": -1.9634954084936207
+    },
+    "(1, 9, 4, 1)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.848857801796104,
+        "dth": 0
+    },
+    "(1, 2, 8, 6)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": 2.0,
+        "dth": 1.9634954084936207
+    },
+    "(1, 7, -5, 12)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": 7.0,
+        "dth": -1.9634954084936207
+    },
+    "(2, 7, 7, 2)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.899494936611665,
+        "dth": 0
+    },
+    "(2, -2, 8, 7)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": -2.0,
+        "dth": 1.9634954084936207
+    },
+    "(2, 8, -2, 13)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": 8.0,
+        "dth": -1.9634954084936207
+    },
+    "(3, 4, 9, 3)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.848857801796104,
+        "dth": 0
+    },
+    "(3, -5, 7, 8)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": -5.0,
+        "dth": 1.9634954084936207
+    },
+    "(3, 8, 2, 14)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": 8.0,
+        "dth": -1.9634954084936207
+    },
+    "(4, 0, 10, 4)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 10.0,
+        "dth": 0
+    },
+    "(4, -7, 5, 9)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": -7.0,
+        "dth": 1.9634954084936207
+    },
+    "(4, 7, 5, 15)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": 7.0,
+        "dth": -1.9634954084936207
+    },
+    "(5, -4, 9, 5)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.848857801796104,
+        "dth": 0
+    },
+    "(5, -8, 2, 10)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": -8.0,
+        "dth": 1.9634954084936207
+    },
+    "(5, 5, 7, 0)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": 5.0,
+        "dth": -1.9634954084936207
+    },
+    "(6, -7, 7, 6)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.899494936611665,
+        "dth": 0
+    },
+    "(6, -8, -2, 11)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": -8.0,
+        "dth": 1.9634954084936207
+    },
+    "(6, 2, 8, 1)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": 2.0,
+        "dth": -1.9634954084936207
+    },
+    "(7, -9, 4, 7)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.848857801796104,
+        "dth": 0
+    },
+    "(7, -7, -5, 12)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": -7.0,
+        "dth": 1.9634954084936207
+    },
+    "(7, -2, 8, 2)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": -2.0,
+        "dth": -1.9634954084936207
+    },
+    "(8, -10, 0, 8)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 10.0,
+        "dth": 0
+    },
+    "(8, -5, -7, 13)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": -5.0,
+        "dth": 1.9634954084936207
+    },
+    "(8, -5, 7, 3)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": -5.0,
+        "dth": -1.9634954084936207
+    },
+    "(9, -9, -4, 9)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.848857801796104,
+        "dth": 0
+    },
+    "(9, -2, -8, 14)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": -2.0,
+        "dth": 1.9634954084936207
+    },
+    "(9, -7, 5, 4)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": -7.0,
+        "dth": -1.9634954084936207
+    },
+    "(10, -7, -7, 10)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.899494936611665,
+        "dth": 0
+    },
+    "(10, 2, -8, 15)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": 2.0,
+        "dth": 1.9634954084936207
+    },
+    "(10, -8, 2, 5)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": -8.0,
+        "dth": -1.9634954084936207
+    },
+    "(11, -4, -9, 11)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.848857801796104,
+        "dth": 0
+    },
+    "(11, 5, -7, 0)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": 5.0,
+        "dth": 1.9634954084936207
+    },
+    "(11, -8, -2, 6)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": -8.0,
+        "dth": -1.9634954084936207
+    },
+    "(12, 0, -10, 12)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 10.0,
+        "dth": 0
+    },
+    "(12, 7, -5, 1)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": 7.0,
+        "dth": 1.9634954084936207
+    },
+    "(12, -7, -5, 7)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": -7.0,
+        "dth": -1.9634954084936207
+    },
+    "(13, 4, -9, 13)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.848857801796104,
+        "dth": 0
+    },
+    "(13, 8, -2, 2)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": 8.0,
+        "dth": 1.9634954084936207
+    },
+    "(13, -5, -7, 8)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": -5.000000000000001,
+        "dth": -1.9634954084936207
+    },
+    "(14, 7, -7, 14)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.899494936611665,
+        "dth": 0
+    },
+    "(14, 8, 2, 3)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": 8.0,
+        "dth": 1.9634954084936207
+    },
+    "(14, -2, -8, 9)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": -2.0,
+        "dth": -1.9634954084936207
+    },
+    "(15, 9, -4, 15)": {
+        "motprimID": 0,
+        "turning_radius": 100000.0,
+        "path_len": 9.848857801796104,
+        "dth": 0
+    },
+    "(15, 7, 5, 4)": {
+        "motprimID": 1,
+        "turning_radius": 5,
+        "path_len": 7.0,
+        "dth": 1.9634954084936207
+    },
+    "(15, 2, -8, 10)": {
+        "motprimID": 2,
+        "turning_radius": 5,
+        "path_len": 2.0,
+        "dth": -1.9634954084936207
+    }
+}
