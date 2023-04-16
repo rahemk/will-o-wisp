@@ -477,16 +477,16 @@ def gen_wow_prims():
     base_prims = [
         {
             "kind": MPrim_line,
-            "params": {"len_c": 10, "cost": 1},
+            "params": {"len_c": 10, "cost": 10},
         },  # forward straight medium
         {
             "kind": MPrim_arc,
-            "params": {"R": 5, "dth_curr": 5, "cost": 2},
-        },  # forward slight left turn
+            "params": {"R": 0, "dth_curr": 1, "cost": 0},
+        },  # in-place left turn
         {
             "kind": MPrim_arc,
-            "params": {"R": 5, "dth_curr": -5, "cost": 2},
-        }  # forward slight right turn
+            "params": {"R": 0, "dth_curr": -1, "cost": 0},
+        }  # in-place right turn
     ]
     return base_prims
 

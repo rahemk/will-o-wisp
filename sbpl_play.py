@@ -57,11 +57,10 @@ if __name__ == "__main__":
     #start = [10, 10, 0]
     #goal = [80, 80, 0]
     
-    for i in range(4):
+    for i in range(20):
         start = [100*random(), 100 * random(), 0]
         goal = [100*random(), 100 * random(), 0]
         path, actions = sbpl_planner.plan(start, goal, init_eps=3.0, backwards_till_solution=False)
-
 
         if path is not None:
             g = plot.Window()

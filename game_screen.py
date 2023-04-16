@@ -6,10 +6,10 @@ POSE_RADIUS = 65
 class GameScreen:
     def __init__(self, width, height):
 
-        os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
+        #os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
         pygame.init()
         self.screen = pygame.display.set_mode((width, height), flags=pygame.SCALED)
-        pygame.display.toggle_fullscreen()
+        #pygame.display.toggle_fullscreen()
         self.terminate = False
 
     def get_movement(self):

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import cv2, json, pprint, time
 import numpy as np
 from pupil_apriltags import Detector
@@ -9,7 +11,7 @@ from game_screen import GameScreen
 if __name__ == "__main__":
 
     try:
-        config_filename = 'config_lab.json'
+        config_filename = 'config_macbook.json'
         config_dict = json.load(open(config_filename, 'r'))
 
         video_channel = config_dict['video_channel']
@@ -44,8 +46,9 @@ if __name__ == "__main__":
     output_corners = [[0, 0], [output_width-1, 0], [output_width-1, output_height-1], [0, output_height-1]]
     homography, status = cv2.findHomography(np.array(screen_corners), np.array(output_corners))
 
-    #cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
-    #cv2.setWindowProperty(input_window_name, cv2.WND_PROP_TOPMOST, 1)
+    input_window_name = "Input"
+    cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty(input_window_name, cv2.WND_PROP_TOPMOST, 1)
 
     cap = None 
     pp = pprint.PrettyPrinter(indent=4)
@@ -113,11 +116,11 @@ if __name__ == "__main__":
 
         game_screen.update(robot_poses, guide_positions)
 
-        #resize_divisor = 1
-        #if resize_divisor > 1:
-        #    cv2.resizeWindow(input_window_name, input_image.shape[1]//resize_divisor, input_image.shape[0]//resize_divisor)
-        #cv2.imshow(input_window_name, input_image)
-        #cv2.waitKey(10)
+        resize_divisor = 1
+        if resize_divisor > 1:
+            cv2.resizeWindow(input_window_name, warped_image.shape[1]//resize_divisor, warped_image.shape[0]//resize_divisor)
+        cv2.imshow(input_window_name, warped_image)
+        cv2.waitKey(10)
 
         elapsed = time.time() - start_time
         print(f"loop elapsed time: {elapsed}")
