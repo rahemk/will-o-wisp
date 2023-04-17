@@ -6,7 +6,7 @@ from pupil_apriltags import Detector
 from math import atan2, cos, pi, sin
 
 from game_screen import GameScreen
-from control_manager import ControlManager
+from levels import CircleLevel
 
 def raw_tags_to_tags(raw_tags):
     tags = []
@@ -32,21 +32,26 @@ def compute_guides(tags, movement_dict):
     for tag in tags:
         c = cos(tag['angle'])
         s = sin(tag['angle'])
+        if not tag['id'] in movement_dict:
+            continue
+
         movement = movement_dict[tag['id']]
-        if movement != "":
-            for guide_displacement in guide_displacement_dict[movement]:
-                print(guide_displacement)
-                # Movement vector relative to robot frame.
-                Rx = guide_displacement[0]
-                Ry = guide_displacement[1]
+        if movement == "":
+            continue
 
-                # Rotate this vector into the world frame.
-                Wx = c * Rx - s * Ry
-                Wy = s * Rx + c * Ry
-                x = tag['x'] + Wx
-                y = tag['y'] + Wy
+        for guide_displacement in guide_displacement_dict[movement]:
+            print(guide_displacement)
+            # Movement vector relative to robot frame.
+            Rx = guide_displacement[0]
+            Ry = guide_displacement[1]
 
-                guide_positions.append((x, y))
+            # Rotate this vector into the world frame.
+            Wx = c * Rx - s * Ry
+            Wy = s * Rx + c * Ry
+            x = tag['x'] + Wx
+            y = tag['y'] + Wy
+
+            guide_positions.append((x, y))
 
     return guide_positions
 
@@ -75,7 +80,7 @@ if __name__ == "__main__":
 
     game_screen = GameScreen(output_width, output_height)
 
-    control_manager = ControlManager()
+    level = CircleLevel()
 
     apriltag_detector = Detector(
        families="tag36h11",
@@ -117,10 +122,10 @@ if __name__ == "__main__":
         manual_movement = game_screen.get_movement()
 
         # Compute a dictionary of the desired movements for all tags.  The
-        # ControlManager will determine which robots are manually controlled
+        # level will determine which robots are manually controlled
         # and which are autonomous.  From the perspective of this script (main.py).
         # There is no difference, they all just have some movement (possibly empty).
-        movement_dict = control_manager.get_movements(manual_movement, tags)
+        movement_dict = level.get_movements(manual_movement, tags)
 
         guide_positions = compute_guides(tags, movement_dict)
 

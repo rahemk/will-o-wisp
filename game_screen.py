@@ -20,6 +20,8 @@ class GameScreen:
     def handle_events(self):
         self.movement = ""
 
+        # Handle events, including key-presses that occur when the key is
+        # pressend down, but not subsequently.
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.terminate = True
@@ -30,6 +32,7 @@ class GameScreen:
                     else:
                         self.debug_level = 0
 
+        # Handle key presses (key could be held down).
         keys = pg.key.get_pressed()
         if keys[pg.K_ESCAPE] or keys[pg.K_q]:
             self.terminate = True
@@ -39,8 +42,6 @@ class GameScreen:
             self.movement = "left"
         if keys[pg.K_RIGHT]:
             self.movement = "right"
-            
-        print(self.movement)
 
     def get_movement(self):
         return self.movement
