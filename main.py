@@ -6,7 +6,49 @@ from pupil_apriltags import Detector
 from math import atan2, cos, pi, sin
 
 from game_screen import GameScreen
-#from controller_set import ControllerSet
+from control_manager import ControlManager
+
+def raw_tags_to_tags(raw_tags):
+    tags = []
+    for raw_tag in raw_tags:
+        cx = int(raw_tag.center[0])
+        cy = int(raw_tag.center[1])
+        #cv2.circle(raw_image, (cx, cy), 10, (255,0,255), thickness=5)
+
+        # Estimate the angle, choosing corner 1 as the origin and corner 0
+        # as being in the forwards direction, relative to corner 1.
+        x = raw_tag.corners[0,0] - raw_tag.corners[1,0]
+        y = raw_tag.corners[0,1] - raw_tag.corners[1,1]
+        tag_angle = atan2(y, x) + pi/2
+        #cv2.putText(raw_image, str(theta), (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+
+        tags.append({'id': raw_tag.tag_id, 'x': cx, 'y': cy, 'angle': tag_angle})
+    return tags
+
+def compute_guides(tags, movement_dict):
+    guide_positions = []
+
+    #forward, angular = movement_dict[tag['tag_id']]
+    for tag in tags:
+        c = cos(tag['angle'])
+        s = sin(tag['angle'])
+        movement = movement_dict[tag['id']]
+        if movement != "":
+            for guide_displacement in guide_displacement_dict[movement]:
+                print(guide_displacement)
+                # Movement vector relative to robot frame.
+                Rx = guide_displacement[0]
+                Ry = guide_displacement[1]
+
+                # Rotate this vector into the world frame.
+                Wx = c * Rx - s * Ry
+                Wy = s * Rx + c * Ry
+                x = tag['x'] + Wx
+                y = tag['y'] + Wy
+
+                guide_positions.append((x, y))
+
+    return guide_positions
 
 if __name__ == "__main__":
 
@@ -33,6 +75,8 @@ if __name__ == "__main__":
 
     game_screen = GameScreen(output_width, output_height)
 
+    control_manager = ControlManager()
+
     apriltag_detector = Detector(
        families="tag36h11",
        nthreads=5,
@@ -48,8 +92,6 @@ if __name__ == "__main__":
 
     input_window_name = "Input"
     cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
-    cv2.setWindowProperty(input_window_name, cv2.WND_PROP_TOPMOST, 1)
-
     cap = None 
     pp = pprint.PrettyPrinter(indent=4)
 
@@ -67,54 +109,22 @@ if __name__ == "__main__":
         warped_image = cv2.warpPerspective(raw_image, homography, (output_width, output_height))
         gray_image = cv2.cvtColor(warped_image, cv2.COLOR_BGR2GRAY)
 
-        tags = apriltag_detector.detect(gray_image)
+        raw_tags = apriltag_detector.detect(gray_image)
 
-        movement = ""
-        if manual_mode == 1:
-            movement = game_screen.get_movement()
-        else:
-            # Compute a dictionary of the desired movements for all tags.  Tags
-            # not corresponding to active robots will not have an entry.
-            #movement_dict = controller_set.get_movements(decoded_tags)
-            assert False, 'Only manual mode supported.'
+        tags = raw_tags_to_tags(raw_tags)
 
-        robot_poses = []
-        guide_positions = []
+        game_screen.handle_events()
+        manual_movement = game_screen.get_movement()
 
-        for tag in tags:
-            #print(tag)
-            cx = int(tag.center[0])
-            cy = int(tag.center[1])
-            #cv2.circle(raw_image, (cx, cy), 10, (255,0,255), thickness=5)
+        # Compute a dictionary of the desired movements for all tags.  The
+        # ControlManager will determine which robots are manually controlled
+        # and which are autonomous.  From the perspective of this script (main.py).
+        # There is no difference, they all just have some movement (possibly empty).
+        movement_dict = control_manager.get_movements(manual_movement, tags)
 
-            # Estimate the angle, choosing corner 1 as the origin and corner 0
-            # as being in the forwards direction, relative to corner 1.
-            x = tag.corners[0,0] - tag.corners[1,0]
-            y = tag.corners[0,1] - tag.corners[1,1]
-            tag_angle = atan2(y, x) + pi/2
-            #cv2.putText(raw_image, str(theta), (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+        guide_positions = compute_guides(tags, movement_dict)
 
-            robot_poses.append((cx, cy, tag_angle))
-
-            #forward, angular = movement_dict[tag['tag_id']]
-            c = cos(tag_angle)
-            s = sin(tag_angle)
-            if movement != "":
-                for guide_displacement in guide_displacement_dict[movement]:
-                    print(guide_displacement)
-                    # Movement vector relative to robot frame.
-                    Rx = guide_displacement[0]
-                    Ry = guide_displacement[1]
-
-                    # Rotate this vector into the world frame.
-                    Wx = c * Rx - s * Ry
-                    Wy = s * Rx + c * Ry
-                    x = cx + Wx
-                    y = cy + Wy
-
-                    guide_positions.append((x, y))
-
-        game_screen.update(robot_poses, guide_positions)
+        game_screen.update(tags, guide_positions)
 
         resize_divisor = 1
         if resize_divisor > 1:
