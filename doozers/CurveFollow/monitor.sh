@@ -1,3 +1,3 @@
 #!/bin/bash
 
-../../bin/arduino-cli monitor -p /dev/ttyACM0
+../bin/arduino-cli monitor -p /dev/ttyACM0

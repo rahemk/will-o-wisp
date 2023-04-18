@@ -12,13 +12,13 @@ Sensor reading 2000 = black light
 #include <Zumo32U4.h>
 
 // Motion-related constant which may need to be tuned.
-const double TURN_FACTOR = 0.6;
+const double TURN_FACTOR = 0.7;
 
 // Maximum speed to apply to setSpeeds.  Nominally, this is 400 but we can
 // decrease it to slow the robot down.
-const int MAX_SPEED = 400;
+const int MAX_SPEED = 300; //400;
 
-const int MAX_SENSOR_VALUE = 2000;
+const double MAX_SENSOR_VALUE = 2000;
 const int NUM_SENSORS = 4;
 
 // Global objects
@@ -28,8 +28,7 @@ int lineSensorValues[NUM_SENSORS];
 
 void setup()
 {
-    uint8_t pins[] = { SENSOR_DOWN1, SENSOR_DOWN2,
-        SENSOR_DOWN4, SENSOR_DOWN5 };
+    uint8_t pins[] = { SENSOR_DOWN1, SENSOR_DOWN2, SENSOR_DOWN4, SENSOR_DOWN5 };
 
     lineSensors.init(pins, 4);
 }
@@ -40,10 +39,17 @@ void loop()
 
     lineSensors.read(lineSensorValues);
 
-    double l = lineSensorValues[0] / MAX_SENSOR_VALUE;
-    double cl = lineSensorValues[1] / MAX_SENSOR_VALUE;
-    double cr = lineSensorValues[2] / MAX_SENSOR_VALUE;
-    double r = lineSensorValues[3] / MAX_SENSOR_VALUE;
+    // All four sensor values, normalized to [0, 1] where white = 1.
+    double l = (MAX_SENSOR_VALUE - lineSensorValues[0]) / MAX_SENSOR_VALUE;
+    double cl = (MAX_SENSOR_VALUE - lineSensorValues[1]) / MAX_SENSOR_VALUE;
+    double cr = (MAX_SENSOR_VALUE - lineSensorValues[2]) / MAX_SENSOR_VALUE;
+    double r = (MAX_SENSOR_VALUE - lineSensorValues[3]) / MAX_SENSOR_VALUE;
+
+    double m = max(l, max(cl, max(cr, r)));
+    if (m < 0.2) {
+        motors.setSpeeds(0, 0);
+        return;
+    }
 
     // balance is effectively an error term which is zero when the amount of
     // light is perfectly balanced on either side; -1 when the light is on the
@@ -61,13 +67,41 @@ void loop()
 
     motors.setSpeeds(scaledLeftSpeed, scaledRightSpeed);
 
-    char buffer[80];
-    sprintf(buffer, "line sensors: %4d %4d %4d %4d, speeds: %4d %4d\n",
+    /*
+    char buffer[250];
+    sprintf(buffer, "line sensors: %4d %4d %4d %4d, balance: %f, raw speeds: %f %f, scaled speeds: %4d %4d\n",
         lineSensorValues[0],
         lineSensorValues[1],
         lineSensorValues[2],
         lineSensorValues[3],
+        balance,
+        leftSpeed,
+        rightSpeed,
         scaledLeftSpeed,
         scaledRightSpeed);
     Serial.print(buffer);
+    */
+    Serial.print("LINE");
+    Serial.print(l);
+    Serial.print(", ");
+    Serial.print(cl);
+    Serial.print(", ");
+    Serial.print(cr);
+    Serial.print(", ");
+    Serial.print(r);
+    Serial.print(", ");
+    Serial.print("\n");
+    Serial.print("BAL");
+    Serial.print(balance);
+    Serial.print(", ");
+    Serial.print("RAW");
+    Serial.print(leftSpeed);
+    Serial.print(", ");
+    Serial.print(rightSpeed);
+    Serial.print(", ");
+    Serial.print("SCALED");
+    Serial.print(scaledLeftSpeed);
+    Serial.print(", ");
+    Serial.print(scaledRightSpeed);
+    Serial.print("\n");
 }
