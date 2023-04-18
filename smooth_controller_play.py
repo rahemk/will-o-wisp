@@ -1,48 +1,14 @@
 #!/usr/bin/env python
 
+'''
+An interactive test environment for SmoothController1.
+'''
+
 import pygame as pg
 from pygame.locals import *
 from math import atan2, cos, sin
+from controllers import SmoothController1
 
-class Controller:
-    def __init__(self, start_pos, start_angle, goal_pos):
-        self.start_pos = start_pos
-        self.start_angle = start_angle
-        self.goal_pos = goal_pos
-
-        self.delta_t = 0.01
-        self.K_v = 1
-        self.K_omega = 0.025
-
-    def get_curve_points(self):
-        curve_vertex_list = [self.start_pos]
-
-        x = self.start_pos.x
-        y = self.start_pos.y
-        theta = self.start_angle
-
-        while (self.goal_pos - pg.math.Vector2(x, y)).magnitude() > 5:
-
-            # Get the goal position in the robot's ref. frame.
-            goal_rob_ref = (self.goal_pos - pg.math.Vector2(x, y)).rotate_rad(-theta)
-
-            # Smooth controller 1 (from old 4766 notes) generates the following
-            # forward and angular speeds
-            v = self.K_v * abs(goal_rob_ref.x)
-            omega = self.K_omega * goal_rob_ref.y
-
-            # Velocity in the global frame.
-            x_dot = v * cos(theta)
-            y_dot = v * sin(theta)
-
-            x += x_dot * self.delta_t
-            y += y_dot * self.delta_t
-            theta += omega * self.delta_t
-
-            curve_vertex_list.append(pg.math.Vector2(x, y))
-
-        return curve_vertex_list
- 
 gray = (100,100,100)
 lightgray = (200,200,200)
 red = (255,0,0)
@@ -92,8 +58,8 @@ def main():
         ### Draw bezier curve
         w = control_points[1] - control_points[0]
         start_angle = atan2(w.y, w.x)
-        controller = Controller(control_points[0], start_angle, control_points[2])
-        points = controller.get_curve_points()
+        controller = SmoothController1()
+        points = controller.get_curve_points(control_points[0], start_angle, control_points[2])
         pg.draw.lines(screen, pg.Color("red"), False, points, 2)
 
         ### Flip screen

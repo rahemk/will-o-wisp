@@ -4,9 +4,15 @@ import cv2, json, pprint, time
 import numpy as np
 from pupil_apriltags import Detector
 from math import atan2, cos, pi, sin
+# This is a rather unneccessary dependency, but I like pygame's vector class.
+from pygame.math import Vector2
 
 from game_screen import GameScreen
-from levels import CircleLevel
+
+# Customize the level and controller.
+from levels import TestLevel
+from controllers import SmoothController1
+controller = SmoothController1()
 
 def raw_tags_to_tags(raw_tags):
     tags = []
@@ -55,6 +61,19 @@ def compute_guides(tags, movement_dict):
 
     return guide_positions
 
+def compute_curves(tags, goal_dict):
+    curves = []
+
+    for tag in tags:
+        if not tag['id'] in goal_dict:
+            continue
+
+        points = controller.get_curve_points(Vector2(tag['x'], tag['y']), tag['angle'], goal_dict[tag['id']])
+        curves.append(points)
+
+    return curves
+
+
 if __name__ == "__main__":
 
     try:
@@ -62,7 +81,7 @@ if __name__ == "__main__":
         config_dict = json.load(open(config_filename, 'r'))
 
         video_channel = config_dict['video_channel']
-        manual_mode = config_dict['manual_mode']
+        show_input = bool(config_dict['show_input'])
         output_width = config_dict['output_width']
         output_height = config_dict['output_height']
         screen_corners = []
@@ -80,7 +99,7 @@ if __name__ == "__main__":
 
     game_screen = GameScreen(output_width, output_height)
 
-    level = CircleLevel()
+    level = TestLevel(output_width, output_height)
 
     apriltag_detector = Detector(
        families="tag36h11",
@@ -95,8 +114,9 @@ if __name__ == "__main__":
     output_corners = [[0, 0], [output_width-1, 0], [output_width-1, output_height-1], [0, output_height-1]]
     homography, status = cv2.findHomography(np.array(screen_corners), np.array(output_corners))
 
-    input_window_name = "Input"
-    cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
+    if show_input:
+        input_window_name = "Input"
+        cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
     cap = None 
     pp = pprint.PrettyPrinter(indent=4)
 
@@ -127,15 +147,22 @@ if __name__ == "__main__":
         # There is no difference, they all just have some movement (possibly empty).
         movement_dict = level.get_movements(manual_movement, tags)
 
+        # Similarly, compute a dictionary of the desired goal positions for all
+        # tags.
+        goal_dict = level.get_goals(manual_movement, tags)
+
         guide_positions = compute_guides(tags, movement_dict)
 
-        game_screen.update(tags, guide_positions)
+        curves = compute_curves(tags, goal_dict)
 
-        resize_divisor = 1
-        if resize_divisor > 1:
-            cv2.resizeWindow(input_window_name, warped_image.shape[1]//resize_divisor, warped_image.shape[0]//resize_divisor)
-        cv2.imshow(input_window_name, warped_image)
-        cv2.waitKey(10)
+        game_screen.update(tags, guide_positions, curves)
+
+        if show_input:
+            resize_divisor = 1
+            if resize_divisor > 1:
+                cv2.resizeWindow(input_window_name, warped_image.shape[1]//resize_divisor, warped_image.shape[0]//resize_divisor)
+            cv2.imshow(input_window_name, warped_image)
+            cv2.waitKey(10)
 
         elapsed = time.time() - start_time
         print(f"loop elapsed time: {elapsed}")

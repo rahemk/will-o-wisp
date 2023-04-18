@@ -1,6 +1,6 @@
 {
     "video_channel": 0,
-    "manual_mode": 1,
+    "show_input": 0,
     "output_width": 960,
     "output_height": 540,
     "upper_left": [436, 53],

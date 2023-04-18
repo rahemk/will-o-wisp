@@ -46,7 +46,7 @@ class GameScreen:
     def get_movement(self):
         return self.movement
 
-    def update(self, tags, guide_positions):
+    def update(self, tags, guide_positions, curves):
         # Fill the screen to wipe away anything from last frame
         self.screen.fill("black")
 
@@ -71,10 +71,11 @@ class GameScreen:
             centre = pg.Vector2(pos[0], pos[1])
             pg.draw.circle(self.screen, "white", centre, 10)
 
+        for curve in curves:
+            pg.draw.lines(self.screen, "white", False, curve, 10)
+
         # flip() the display to put your work on screen
         pg.display.flip()
-
-        # TBD: Update self.delta_time to get framerate- independent physics?
 
         if self.terminate:
             self.close()
