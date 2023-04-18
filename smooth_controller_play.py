@@ -60,7 +60,7 @@ def main():
         start_angle = atan2(w.y, w.x)
         controller = SmoothController1()
         points = controller.get_curve_points(control_points[0], start_angle, control_points[2])
-        pg.draw.lines(screen, pg.Color("red"), False, points, 2)
+        pg.draw.lines(screen, pg.Color("white"), False, points, 10)
 
         ### Flip screen
         pg.display.flip()

@@ -7,10 +7,10 @@ POSE_RADIUS = 65
 class GameScreen:
     def __init__(self, width, height):
 
-        #os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
+        os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
         pg.init()
         self.screen = pg.display.set_mode((width, height), flags=pg.SCALED)
-        #pg.display.toggle_fullscreen()
+        pg.display.toggle_fullscreen()
         self.terminate = False
 
         self.debug_level = 1
@@ -72,7 +72,7 @@ class GameScreen:
             pg.draw.circle(self.screen, "white", centre, 10)
 
         for curve in curves:
-            pg.draw.lines(self.screen, "white", False, curve, 10)
+            pg.draw.lines(self.screen, "white", False, curve, 20)
 
         # flip() the display to put your work on screen
         pg.display.flip()

@@ -77,7 +77,7 @@ def compute_curves(tags, goal_dict):
 if __name__ == "__main__":
 
     try:
-        config_filename = 'config_macbook.json'
+        config_filename = 'config_lab.json'
         config_dict = json.load(open(config_filename, 'r'))
 
         video_channel = config_dict['video_channel']

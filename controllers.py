@@ -24,9 +24,9 @@ Based on Smooth Controller 1 from 2018 notes for COMP 4766.
 '''
 class SmoothController1(AbstractController):
     def __init__(self):
-        self.delta_t = 0.01
+        self.delta_t = 0.001
         self.K_v = 1
-        self.K_omega = 0.025
+        self.K_omega = 0.015
 
     def get_curve_points(self, start_pos, start_angle, goal_pos):
         curve_vertex_list = [start_pos]

@@ -12,11 +12,11 @@ Sensor reading 2000 = black light
 #include <Zumo32U4.h>
 
 // Motion-related constant which may need to be tuned.
-const double TURN_FACTOR = 0.7;
+const double TURN_FACTOR = 0.8;
 
 // Maximum speed to apply to setSpeeds.  Nominally, this is 400 but we can
 // decrease it to slow the robot down.
-const int MAX_SPEED = 300; //400;
+const int MAX_SPEED = 400;
 
 const double MAX_SENSOR_VALUE = 2000;
 const int NUM_SENSORS = 4;

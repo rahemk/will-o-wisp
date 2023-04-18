@@ -55,7 +55,8 @@ class TestLevel:
 
     def get_goals(self, manual_movement, tags):
         for tag in tags:
-            if tag['id'] == 0:
+#            if tag['id'] == 0:
+            if tag['id'] == -1:
                 if manual_movement == "forward":
                     delta_angle = 0
                 elif manual_movement == "left":
