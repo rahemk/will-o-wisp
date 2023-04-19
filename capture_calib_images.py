@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-import cv2, time
+import cv2, os, time
 
 # Parameters
-video_channel = 0
+video_channel = 4
 calib_dir = "calib_images_lab/"
-secs_between_captures = 10
+secs_between_captures = 5
 window_name = "Input"
 
 # State variables and initialization
@@ -41,6 +41,7 @@ if __name__ == "__main__":
         # has passed since the last capture.
         if c == 32 or (time.time() - last_capture_time) >= secs_between_captures:
             filename = f"{calib_dir}{save_index:02}.png"
+            os.system('say go')
             print(f"Saving: {filename}")
             cv2.imwrite(filename, image)
             save_index += 1
