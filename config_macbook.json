@@ -3,10 +3,10 @@
     "show_input": 0,
     "output_width": 960,
     "output_height": 540,
-    "upper_left": [436, 53],
-    "upper_right": [1563, 378],
-    "lower_right": [1734, 990],
-    "lower_left": [201, 807],
+    "upper_left": [397, 18],
+    "upper_right": [1569, 399],
+    "lower_right": [1764, 1038],
+    "lower_left": [91, 811],
     "left_guide_displacement": [20, -15],
     "right_guide_displacement": [20, 15]
 }

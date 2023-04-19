@@ -77,7 +77,7 @@ def compute_curves(tags, goal_dict):
 if __name__ == "__main__":
 
     try:
-        config_filename = 'config_lab.json'
+        config_filename = 'config_macbook.json'
         config_dict = json.load(open(config_filename, 'r'))
 
         video_channel = config_dict['video_channel']
@@ -111,6 +111,11 @@ if __name__ == "__main__":
        debug=0
     )
 
+    with open("calib_K.json", "r") as calib_file:
+        calib_K = np.asarray(json.load(calib_file))
+    with open("calib_D.json", "r") as calib_file:
+        calib_D = np.asarray(json.load(calib_file))
+
     output_corners = [[0, 0], [output_width-1, 0], [output_width-1, output_height-1], [0, output_height-1]]
     homography, status = cv2.findHomography(np.array(screen_corners), np.array(output_corners))
 
@@ -130,8 +135,14 @@ if __name__ == "__main__":
             print('Cannot read video.')
             break
 
+        # Undistort the raw image.  This also has to be done in picker.py so that
+        # the picked corners used to build the homography matrix are consistent.
+        h, w = raw_image.shape[:2]
+        newcameramtx, roi = cv2.getOptimalNewCameraMatrix(calib_K, calib_D, (w,h), 1, (w,h))
+        undistorted = cv2.undistort(raw_image, calib_K, calib_D, None, newcameramtx)
+
         # Warp the raw image.
-        warped_image = cv2.warpPerspective(raw_image, homography, (output_width, output_height))
+        warped_image = cv2.warpPerspective(undistorted, homography, (output_width, output_height))
         gray_image = cv2.cvtColor(warped_image, cv2.COLOR_BGR2GRAY)
 
         raw_tags = apriltag_detector.detect(gray_image)

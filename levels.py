@@ -78,16 +78,16 @@ class TestLevel:
                 self.robot_goals[tag['id']] = (goal_x, goal_y)
                 continue
 
-            if not tag['id'] in self.robot_goals:
-                # This is the first time we're seeing this robot.  Choose a
-                # random goal and store it in robot_goals and  
-                self._set_random_goal(tag)
-            else:
-                # This robot has a goal, if its reached it we'll set a new one.
-                (x, y) = tag['x'], tag['y']
-                (goal_x, goal_y) = self.robot_goals[tag['id']]
-                if hypot(goal_x - x, goal_y - y) < 50:
+            if tag['id'] == 0:
+                if not tag['id'] in self.robot_goals:
+                    # This is the first time we're seeing this robot.  Choose a
+                    # random goal and store it in robot_goals and  
                     self._set_random_goal(tag)
-                
+                else:
+                    # This robot has a goal, if its reached it we'll set a new one.
+                    (x, y) = tag['x'], tag['y']
+                    (goal_x, goal_y) = self.robot_goals[tag['id']]
+                    if hypot(goal_x - x, goal_y - y) < 50:
+                        self._set_random_goal(tag)
 
         return self.robot_goals
