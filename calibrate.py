@@ -28,7 +28,7 @@ objp[0,:,:2] = np.mgrid[0:BOARD_SHAPE[0], 0:BOARD_SHAPE[1]].T.reshape(-1, 2)
 # Look for .png files (expected to have the format XX.png where XX is a 2-digit
 # integer) in the 'calibration_images' directory and sort them.
 #
-datadir = "calib_images_macbook/"
+datadir = "calib_images_lab/"
 img_files = np.array([datadir + f for f in os.listdir(datadir) if f.endswith(".png") ])
 numbers_in_files = [int(p.split(".")[0].split("/")[1]) for p in img_files]
 order = np.argsort(numbers_in_files)

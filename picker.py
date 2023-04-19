@@ -4,7 +4,7 @@ import cv2, json
 import numpy as np
 
 # Parameters
-video_channel = 0
+video_channel = 4
 window_name = "Input"
 
 def mouse_callback(event, x, y, flags, param):

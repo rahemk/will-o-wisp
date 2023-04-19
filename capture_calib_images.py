@@ -1,21 +1,23 @@
 #!/usr/bin/env python
 
-import cv2
+import cv2, time
 
 # Parameters
 video_channel = 0
-calib_dir = "calib_images_macbook/"
+calib_dir = "calib_images_lab/"
+secs_between_captures = 10
 window_name = "Input"
 
 # State variables and initialization
 save_index = 0
+last_capture_time = time.time()
 cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
 cv2.setWindowProperty(window_name, cv2.WND_PROP_TOPMOST, 1)
 
 if __name__ == "__main__":
 
     cap = None
-    print("Hit space to capture images.")
+    print(f"Hit space to capture images.  Images will also be captured every {secs_between_captures} seconds.")
 
     while True:
         if cap is None: cap = cv2.VideoCapture(video_channel)
@@ -35,11 +37,14 @@ if __name__ == "__main__":
         c = cv2.waitKey(10)
         #print(f"key: {c}")
 
-        if c == 32:
+        # Capture an image if the space bar has been hit, or if sufficient time
+        # has passed since the last capture.
+        if c == 32 or (time.time() - last_capture_time) >= secs_between_captures:
             filename = f"{calib_dir}{save_index:02}.png"
             print(f"Saving: {filename}")
             cv2.imwrite(filename, image)
             save_index += 1
+            last_capture_time = time.time()
 
         # press ESC or q to exit
         if c == 27 or c == ord('q'):
