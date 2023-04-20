@@ -39,7 +39,6 @@ class ConfigLoader:
             # to this file.
 
             dict = json.load(open(config_filename, 'r'))
-            print(dict)
             ConfigLoader._config = Config()
 
             ConfigLoader._config.video_channel = dict['video_channel']
