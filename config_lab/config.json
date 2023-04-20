@@ -1,6 +1,8 @@
 {
     "video_channel": 4,
     "show_input": 1,
+    "input_width": 1920,
+    "input_height": 1080,
     "output_width": 960,
     "output_height": 540,
     "upper_left": [556, 372],

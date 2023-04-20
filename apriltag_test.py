@@ -1,10 +1,13 @@
+#!/usr/bin/env python
+
 import cv2, time
 from pupil_apriltags import Detector
 import pprint
 import numpy as np
 from math import atan2
 
-video_channel = 4
+from config_loader import ConfigLoader
+cfg = ConfigLoader.get()
 
 raw_window_name = "Raw"
 
@@ -24,14 +27,9 @@ if __name__ == "__main__":
     cv2.setWindowProperty(raw_window_name, cv2.WND_PROP_TOPMOST, 1)
     pp = pprint.PrettyPrinter(indent=4)
 
-    cap = None 
-
-    if cap is None: cap = cv2.VideoCapture(video_channel)
-    width = 1920
-    height = 1080
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-    time.sleep(5)
+    cap = cv2.VideoCapture(cfg.video_channel)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, cfg.input_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cfg.input_height)
 
     while True:
 
@@ -45,6 +43,7 @@ if __name__ == "__main__":
         # Convert to grayscale
         gray_image = cv2.cvtColor(raw_image, cv2.COLOR_BGR2GRAY)
 
+        print(gray_image.shape)
         tags = at_detector.detect(gray_image)
         #pp.pprint(f"NUMBER OF TAGS: {len(tags)}")
         
@@ -85,4 +84,4 @@ if __name__ == "__main__":
         elapsed = time.time() - start_time
         print(f"loop elapsed time: {elapsed}")
 
-    if cap is not None: cap.release()
+    cap.release()

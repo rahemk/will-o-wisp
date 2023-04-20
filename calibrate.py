@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Calibrate the camera using .png files in 'calibration_images' of the format
+Calibrate the camera using .png files in the current directory of the format
 XX.png, where XX is a 2-digit integer.  This will produce calib_K.json (K is
 the camera matrix) and calib_D.json (D is the distortion coefficients).
 """
@@ -28,12 +28,14 @@ objp[0,:,:2] = np.mgrid[0:BOARD_SHAPE[0], 0:BOARD_SHAPE[1]].T.reshape(-1, 2)
 # Look for .png files (expected to have the format XX.png where XX is a 2-digit
 # integer) in the 'calibration_images' directory and sort them.
 #
-datadir = "calib_images_lab/"
+datadir = "./"
 img_files = np.array([datadir + f for f in os.listdir(datadir) if f.endswith(".png") ])
-numbers_in_files = [int(p.split(".")[0].split("/")[1]) for p in img_files]
+print(img_files)
+print(img_files[0].split("."))
+numbers_in_files = [int(p.split(".")[1].split("/")[1]) for p in img_files]
 order = np.argsort(numbers_in_files)
 img_files = img_files[order]
-# print(img_files)
+print(img_files)
 
 #
 # Compute the corners from each chessboard image.
@@ -95,3 +97,5 @@ with open("calib_K.json", "w") as calib_file:
     json.dump(K.tolist(), calib_file, indent=4)
 with open("calib_D.json", "w") as calib_file:
     json.dump(D.tolist(), calib_file, indent=4)
+
+print("Wrote calib_K.json and calib_D.json to the current directory.  You might want to move them elsewhere.")

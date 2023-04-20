@@ -2,9 +2,10 @@
 
 import cv2, os, time
 
+from config_loader import ConfigLoader
+cfg = ConfigLoader.get()
+
 # Parameters
-video_channel = 4
-calib_dir = "calib_images_lab/"
 secs_between_captures = 5
 window_name = "Input"
 
@@ -16,15 +17,13 @@ cv2.setWindowProperty(window_name, cv2.WND_PROP_TOPMOST, 1)
 
 if __name__ == "__main__":
 
-    cap = None
     print(f"Hit space to capture images.  Images will also be captured every {secs_between_captures} seconds.")
 
+    cap = cv2.VideoCapture(cfg.video_channel)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, cfg.input_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cfg.input_height)
+
     while True:
-        if cap is None: cap = cv2.VideoCapture(video_channel)
-        #width = 1280
-        #height = 720
-        #cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
         ret, image = cap.read()
         if not ret:
@@ -40,7 +39,7 @@ if __name__ == "__main__":
         # Capture an image if the space bar has been hit, or if sufficient time
         # has passed since the last capture.
         if c == 32 or (time.time() - last_capture_time) >= secs_between_captures:
-            filename = f"{calib_dir}{save_index:02}.png"
+            filename = f"{save_index:02}.png"
             os.system('say go')
             print(f"Saving: {filename}")
             cv2.imwrite(filename, image)
@@ -51,4 +50,4 @@ if __name__ == "__main__":
         if c == 27 or c == ord('q'):
             break
 
-    if cap is not None: cap.release()
+    cap.release()

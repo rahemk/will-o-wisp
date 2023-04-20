@@ -46,23 +46,23 @@ class GameScreen:
     def get_movement(self):
         return self.movement
 
-    def update(self, tags, guide_positions, curves):
+    def update(self, wow_tags, guide_positions, curves):
         # Fill the screen to wipe away anything from last frame
         self.screen.fill("black")
 
         if self.debug_level > 0:
-            for tag in tags:
-                centre = pg.Vector2(tag['x'], tag['y'])
-                unit_vector = pg.Vector2(cos(tag['angle']), sin(tag['angle']))
+            for wow_tag in wow_tags:
+                centre = pg.Vector2(wow_tag.x, wow_tag.y)
+                unit_vector = pg.Vector2(cos(wow_tag.angle), sin(wow_tag.angle))
 
                 pg.draw.circle(self.screen, "purple", centre, POSE_RADIUS, width=2)
                 pg.draw.line(self.screen, "purple", centre + 0.7 * POSE_RADIUS * unit_vector, centre + POSE_RADIUS * unit_vector, width=3)
 
                 if self.debug_level == 1:
-                    text_surface, rect = self.font.render(str(tag['id']), "purple")
+                    text_surface, rect = self.font.render(str(wow_tag.id), "purple")
                 elif self.debug_level == 2:
                     newline = '\n'
-                    text_surface, rect = self.font.render(f"id: {tag['id']}{newline}pos: {tag['x'], tag['y']}{newline}angle: {int(tag['angle']*180/pi)}", "purple")
+                    text_surface, rect = self.font.render(f"id: {wow_tag.id}{newline}pos: {wow_tag.x, wow_tag.y}{newline}angle: {int(wow_tag.angle*180/pi)}", "purple")
 
                 text_position = centre + 1.2 * POSE_RADIUS * unit_vector - 0.5 * pg.Vector2(rect.width, rect.height)
                 self.screen.blit(text_surface, text_position)

@@ -25,13 +25,13 @@ class AbstractLevel(ABC):
 All robots manually controlled.
 '''
 class JustManualLevel(AbstractLevel):
-    def get_movements(self, manual_movement, tags):
+    def get_movements(self, manual_movement, wow_tags):
         movement_dict = {}
-        for tag in tags:
-            movement_dict[tag['id']] = manual_movement
+        for tag in wow_tags:
+            movement_dict[tag.id] = manual_movement
         return movement_dict
 
-    def get_goals(self, manual_movement, tags):
+    def get_goals(self, manual_movement, wow_tags):
         # The robots have no goals.  That is why they fail.
         return {}
 
@@ -45,18 +45,17 @@ class TestLevel:
         self.height = height
         self.robot_goals = {}
 
-    def _set_random_goal(self, tag):
+    def _set_random_goal(self, wow_tag):
         goal_x = random() * self.width
         goal_y = random() * self.height
-        self.robot_goals[tag['id']] = (goal_x, goal_y)
+        self.robot_goals[wow_tag.id] = (goal_x, goal_y)
 
-    def get_movements(self, manual_movement, tags):
+    def get_movements(self, manual_movement, wow_tags):
         return {}
 
-    def get_goals(self, manual_movement, tags):
-        for tag in tags:
-#            if tag['id'] == 0:
-            if tag['id'] == -1:
+    def get_goals(self, manual_movement, wow_tags):
+        for wow_tag in wow_tags:
+            if wow_tag.id == 0:
                 if manual_movement == "forward":
                     delta_angle = 0
                 elif manual_movement == "left":
@@ -65,30 +64,29 @@ class TestLevel:
                     delta_angle = pi/4
                 elif manual_movement == "":
                     # Remove goal if previously set.
-                    if tag['id'] in self.robot_goals:
-                        self.robot_goals.pop(tag['id'])
+                    if wow_tag.id in self.robot_goals:
+                        self.robot_goals.pop(wow_tag.id)
                     continue
                 else:
                     assert False, f'Invalid movement: {manual_movement}'
 
                 d = 100
-                goal_x = tag['x'] + d * cos(tag['angle'] + delta_angle)
-                goal_y = tag['y'] + d * sin(tag['angle'] + delta_angle)
+                goal_x = wow_tag.x + d * cos(wow_tag.angle + delta_angle)
+                goal_y = wow_tag.y + d * sin(wow_tag.angle + delta_angle)
 
-                self.robot_goals[tag['id']] = (goal_x, goal_y)
+                self.robot_goals[wow_tag.id] = (goal_x, goal_y)
                 continue
 
-            if tag['id'] == 0:
-                if not tag['id'] in self.robot_goals:
-                    # This is the first time we're seeing this robot.  Choose a
-                    # random goal and store it in robot_goals and  
-                    self._set_random_goal(tag)
-                else:
-                    # This robot has a goal, if its reached it we'll set a new one.
-                    (x, y) = tag['x'], tag['y']
-                    (goal_x, goal_y) = self.robot_goals[tag['id']]
-                    if hypot(goal_x - x, goal_y - y) < 50:
-                        self._set_random_goal(tag)
+            if not wow_tag.id in self.robot_goals:
+                # This is the first time we're seeing this robot.  Choose a
+                # random goal and store it in robot_goals and  
+                self._set_random_goal(wow_tag)
+            else:
+                # This robot has a goal, if its reached it we'll set a new one.
+                (x, y) = wow_tag.x, wow_tag.y
+                (goal_x, goal_y) = self.robot_goals[wow_tag.id]
+                if hypot(goal_x - x, goal_y - y) < 50:
+                    self._set_random_goal(wow_tag)
 
         return self.robot_goals
 
@@ -99,10 +97,10 @@ class MohLevel(AbstractLevel):
         pass
     
     @abstractmethod
-    def get_movements(self, manual_movement, tags):
+    def get_movements(self, manual_movement, wow_tags):
         pass
 
     @abstractmethod
-    def get_goals(self, manual_movement, tags):
+    def get_goals(self, manual_movement, wow_tags):
         # INSERT CODE
         pass
