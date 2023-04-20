@@ -4,7 +4,7 @@ import pprint
 import numpy as np
 from math import atan2
 
-video_channel = 0
+video_channel = 4
 
 raw_window_name = "Raw"
 
@@ -26,11 +26,17 @@ if __name__ == "__main__":
 
     cap = None 
 
+    if cap is None: cap = cv2.VideoCapture(video_channel)
+    width = 1920
+    height = 1080
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+    time.sleep(5)
+
     while True:
 
         start_time = time.time()
 
-        if cap is None: cap = cv2.VideoCapture(video_channel)
         ret, raw_image = cap.read()
         if not ret:
             print('Cannot read video.')
