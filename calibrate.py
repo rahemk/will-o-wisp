@@ -63,7 +63,7 @@ for image_file in img_files:
 
         # Pause for 500 milliseconds.  Increase this to see the corners
         # detected for each calibration image more carefully.
-        cv2.waitKey(500)
+        cv2.waitKey(1500)
 
 #
 # Calibrate!

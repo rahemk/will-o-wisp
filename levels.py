@@ -6,6 +6,8 @@ be manual (i.e. from keyboard input) or autonomous, as determined by the level.
 from abc import ABC, abstractmethod
 from random import random
 from math import cos, hypot, pi, sin
+
+from wow_tag import WowTag
  
 class AbstractLevel(ABC):
  
@@ -28,12 +30,15 @@ class TestLevel:
         self.robot_goals = {}
 
     def _set_random_goal(self, wow_tag):
-        goal_x = random() * self.width
-        goal_y = random() * self.height
+        xbound = self.width / 5
+        ybound = self.height / 5
+        goal_x = xbound + random() * (self.width - 2*xbound)
+        goal_y = ybound + random() * (self.height - 2*ybound)
         self.robot_goals[wow_tag.id] = (goal_x, goal_y)
 
     def get_goals(self, manual_movement, wow_tags):
         for wow_tag in wow_tags:
+            print(wow_tag)
             if wow_tag.id == 0:
                 if manual_movement == "forward":
                     delta_angle = 0
@@ -69,13 +74,32 @@ class TestLevel:
 
         return self.robot_goals
 
-class MohLevel(AbstractLevel):
+class SwarmJSLevel(AbstractLevel):
  
-    def __init__(self, value):
+    def __init__(self, ADD_ANY_NECESSARY_PARAMS_LIKE_WIDTH_OR_HEIGHT):
         # CONNECT TO SWARMJS
         pass
     
-    @abstractmethod
     def get_goals(self, manual_movement, wow_tags):
-        # INSERT CODE
-        pass
+
+        # REPLACE THE FOLLOWING WITH DATA FROM SWARMJS.
+
+        # Should return a dictionary where the keys are integer id's (the id of each tag)
+        # and the values are the (goal_x, goal_y) positions.
+        # Ignore 'manual_movement'.
+        self.robot_goals = {}
+
+        for wow_tag in wow_tags:
+            if wow_tag.id == 0:
+                self.robot_goals[wow_tag.id] = (500, 100)
+            elif wow_tag.id == 1:
+                self.robot_goals[wow_tag.id] = (200, 400)
+
+        return self.robot_goals
+
+if __name__ == "__main__":
+
+    wow_tags = [WowTag(0, 541, 260, -0.5), WowTag(1, 745, 182, -1.5)]
+    level = SwarmJSLevel("IGNORED PARAMS")
+    goals = level.get_goals("", wow_tags)
+    print(goals)

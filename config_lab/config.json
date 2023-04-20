@@ -1,12 +1,12 @@
 {
     "video_channel": 4,
-    "show_input": 1,
+    "show_input": 0,
     "input_width": 1920,
     "input_height": 1080,
     "output_width": 960,
     "output_height": 540,
-    "upper_left": [556, 372],
-    "upper_right": [68, 371],
-    "lower_right": [60, 96],
-    "lower_left": [563, 95]
+    "upper_left": [1686, 812],
+    "upper_right": [67, 642],
+    "lower_right": [351, 40],
+    "lower_left": [1618, 51]
 }

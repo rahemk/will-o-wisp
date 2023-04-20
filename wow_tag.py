@@ -11,6 +11,8 @@ class WowTag:
         self.x = x
         self.y = y
         self.angle = angle
+    def __str__(self):
+        return f"{self.id}, {self.x}, {self.y}, {self.angle}"
 
 def raw_tags_to_wow_tags(raw_tags):
     wow_tags = []
