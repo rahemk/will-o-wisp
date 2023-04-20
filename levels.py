@@ -91,3 +91,18 @@ class TestLevel:
                         self._set_random_goal(tag)
 
         return self.robot_goals
+
+class MohLevel(AbstractLevel):
+ 
+    def __init__(self, value):
+        # CONNECT TO SWARMJS
+        pass
+    
+    @abstractmethod
+    def get_movements(self, manual_movement, tags):
+        pass
+
+    @abstractmethod
+    def get_goals(self, manual_movement, tags):
+        # INSERT CODE
+        pass

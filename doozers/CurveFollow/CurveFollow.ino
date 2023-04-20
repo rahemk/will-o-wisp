@@ -150,5 +150,4 @@ void loop()
     Serial.print(" ");
     Serial.print(scaledRightSpeed);
     Serial.print("\n");
-    */
 }
