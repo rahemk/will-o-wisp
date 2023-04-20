@@ -16,36 +16,6 @@ from levels import TestLevel
 from controllers import SmoothController1
 controller = SmoothController1()
 
-def compute_guides(wow_tags, movement_dict):
-    guide_positions = []
-
-    #forward, angular = movement_dict[tag['tag_id']]
-    for wow_tag in wow_tags:
-        c = cos(wow_tag.angle)
-        s = sin(wow_tag.angle)
-        if not wow_tag.id in movement_dict:
-            continue
-
-        movement = movement_dict[wow_tag.id]
-        if movement == "":
-            continue
-
-        for guide_displacement in cfg.guide_displacement_dict[movement]:
-            print(guide_displacement)
-            # Movement vector relative to robot frame.
-            Rx = guide_displacement[0]
-            Ry = guide_displacement[1]
-
-            # Rotate this vector into the world frame.
-            Wx = c * Rx - s * Ry
-            Wy = s * Rx + c * Ry
-            x = wow_tag.x + Wx
-            y = wow_tag.y + Wy
-
-            guide_positions.append((x, y))
-
-    return guide_positions
-
 def compute_curves(wow_tags, goal_dict):
     curves = []
     for wow_tag in wow_tags:
@@ -113,21 +83,13 @@ if __name__ == "__main__":
         game_screen.handle_events()
         manual_movement = game_screen.get_movement()
 
-        # Compute a dictionary of the desired movements for all tags.  The
-        # level will determine which robots are manually controlled
-        # and which are autonomous.  From the perspective of this script (main.py).
-        # There is no difference, they all just have some movement (possibly empty).
-        movement_dict = level.get_movements(manual_movement, wow_tags)
-
         # Similarly, compute a dictionary of the desired goal positions for all
         # tags.
         goal_dict = level.get_goals(manual_movement, wow_tags)
 
-        guide_positions = compute_guides(wow_tags, movement_dict)
-
         curves = compute_curves(wow_tags, goal_dict)
 
-        game_screen.update(wow_tags, guide_positions, curves)
+        game_screen.update(wow_tags, curves)
 
         if cfg.show_input:
             resize_divisor = 1

@@ -1,6 +1,6 @@
 '''
-A level manages the movements produced by each robot.  These movements could
-be manual (i.e. from keyboard input) or autonomous. 
+A level determines the goals produced by each robot.  These goals could
+be manual (i.e. from keyboard input) or autonomous, as determined by the level. 
 '''
 
 from abc import ABC, abstractmethod
@@ -14,26 +14,8 @@ class AbstractLevel(ABC):
         super().__init__()
     
     @abstractmethod
-    def get_movements(self, manual_movement, tags):
-        pass
-
-    @abstractmethod
     def get_goals(self, manual_movement, tags):
         pass
-
-'''
-All robots manually controlled.
-'''
-class JustManualLevel(AbstractLevel):
-    def get_movements(self, manual_movement, wow_tags):
-        movement_dict = {}
-        for tag in wow_tags:
-            movement_dict[tag.id] = manual_movement
-        return movement_dict
-
-    def get_goals(self, manual_movement, wow_tags):
-        # The robots have no goals.  That is why they fail.
-        return {}
 
 '''
 Robot 0 manually controlled.  All others are given random goals upon entry.
@@ -49,9 +31,6 @@ class TestLevel:
         goal_x = random() * self.width
         goal_y = random() * self.height
         self.robot_goals[wow_tag.id] = (goal_x, goal_y)
-
-    def get_movements(self, manual_movement, wow_tags):
-        return {}
 
     def get_goals(self, manual_movement, wow_tags):
         for wow_tag in wow_tags:
@@ -96,10 +75,6 @@ class MohLevel(AbstractLevel):
         # CONNECT TO SWARMJS
         pass
     
-    @abstractmethod
-    def get_movements(self, manual_movement, wow_tags):
-        pass
-
     @abstractmethod
     def get_goals(self, manual_movement, wow_tags):
         # INSERT CODE

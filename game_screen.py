@@ -46,7 +46,7 @@ class GameScreen:
     def get_movement(self):
         return self.movement
 
-    def update(self, wow_tags, guide_positions, curves):
+    def update(self, wow_tags, curves):
         # Fill the screen to wipe away anything from last frame
         self.screen.fill("black")
 
@@ -66,10 +66,6 @@ class GameScreen:
 
                 text_position = centre + 1.2 * POSE_RADIUS * unit_vector - 0.5 * pg.Vector2(rect.width, rect.height)
                 self.screen.blit(text_surface, text_position)
-
-        for pos in guide_positions:
-            centre = pg.Vector2(pos[0], pos[1])
-            pg.draw.circle(self.screen, "white", centre, 10)
 
         for curve in curves:
             pg.draw.lines(self.screen, "white", False, curve, 20)

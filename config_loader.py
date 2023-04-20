@@ -22,7 +22,6 @@ class Config:
     output_width = None
     output_height = None
     screen_corners = None
-    guide_displacement_dict = None
     calib_K = None
     calib_D = None
 
@@ -54,11 +53,6 @@ class ConfigLoader:
             ConfigLoader._config.screen_corners.append( dict['upper_right'] )
             ConfigLoader._config.screen_corners.append( dict['lower_right'] )
             ConfigLoader._config.screen_corners.append( dict['lower_left'] )
-            ConfigLoader._config.guide_displacement_dict = {
-                "left": [dict['left_guide_displacement']],
-                "forward": [dict['left_guide_displacement'], dict['right_guide_displacement']],
-                "right": [dict['right_guide_displacement']]
-            }
         except:
             print('Cannot load config: %s'% config_filename)  
 

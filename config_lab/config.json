@@ -8,7 +8,5 @@
     "upper_left": [556, 372],
     "upper_right": [68, 371],
     "lower_right": [60, 96],
-    "lower_left": [563, 95],
-    "left_guide_displacement": [20, -15],
-    "right_guide_displacement": [20, 15]
+    "lower_left": [563, 95]
 }
