@@ -12,7 +12,7 @@ from config_loader import ConfigLoader
 from game_screen import GameScreen
 
 # Customize the level and controller.
-from levels import TestLevel
+from levels import FirstGameLevel
 from controllers import SmoothController1
 controller = SmoothController1()
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     game_screen = GameScreen(cfg.output_width, cfg.output_height)
 
-    level = TestLevel(cfg.output_width, cfg.output_height)
+    level = FirstGameLevel(cfg.output_width, cfg.output_height)
 
     apriltag_detector = Detector(
        families="tag36h11",
@@ -73,7 +73,6 @@ if __name__ == "__main__":
 
         # Warp the raw image.
         warped_image = cv2.warpPerspective(undistorted, homography, (cfg.output_width, cfg.output_height))
-        print(warped_image.shape)
         gray_image = cv2.cvtColor(warped_image, cv2.COLOR_BGR2GRAY)
 
         raw_tags = apriltag_detector.detect(gray_image)
@@ -83,13 +82,15 @@ if __name__ == "__main__":
         game_screen.handle_events()
         manual_movement = game_screen.get_movement()
 
-        # Similarly, compute a dictionary of the desired goal positions for all
-        # tags.
-        goal_dict = level.get_goals(manual_movement, wow_tags)
+        # The level is responsibility for determine the application's evolution.
+        # This is communicated in a dictionary of goals for tags (i.e. robots)
+        # and a list of sprites which are graphical elements.  They are not
+        # robots, but could be drawn adjacent to a robot.
+        goal_dict, sprites = level.get_goals_and_sprites(manual_movement, wow_tags)
 
-        curves = compute_curves(wow_tags, goal_dict)
+        control_curves = compute_curves(wow_tags, goal_dict)
 
-        game_screen.update(wow_tags, curves)
+        game_screen.update(wow_tags, control_curves, sprites)
 
         if cfg.show_input:
             resize_divisor = 1
@@ -99,6 +100,6 @@ if __name__ == "__main__":
             cv2.waitKey(10)
 
         elapsed = time.time() - start_time
-        print(f"loop elapsed time: {elapsed}")
+        #print(f"loop elapsed time: {elapsed}")
 
     cap.release()
