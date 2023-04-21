@@ -118,16 +118,30 @@ class FirstGameLevel:
         self.enemy_bullet_sprites = []
         self.deco_sprites = []
 
-    def _set_enemy_goal(self, wow_tag):
+    def _set_enemy_goal(self, wow_tag, wow_tags):
         '''An enemy will alternate between goals in the middle third of the
         environment and goals in the right third.'''
-        x_bound = self.width / 5
-        y_bound = self.height / 5
+        boundary_buffer = self.width / 5
+        band_buffer = 25
+        
+        # These width and height 
+        width = self.width - 2*buffer
+        height = self.height - 2*buffer
+
+        # Also, to reduce the chances of collision we'll split the vertical
+        # dimension into bands where each robot tries to stay within its closest
+        # band.
+        n_enemies = len(wow_tags) - 1
+        tags_sorted_by_y = sorted(wow_tags, key=lambda tag: tag.y)
+        i = tags_sorted_by_y.index(wow_tag)
+        assert i != -1
+        y_min = boundary_buffer + ((i-1)/n_enemies) * height + band_buffer
+        y_max = boundary_buffer + (i/n_enemies) * height - band_buffer
 
         id = wow_tag.id
         if id not in self.enemy_state_dict or self.enemy_state_dict[id] == "right_third":
             x_min = (2/3) * self.width 
-            x_max = self.width - x_bound
+            x_max = self.width - boundary_buffer
             self.enemy_state_dict[id] = "middle_third"
         else:
             assert self.enemy_state_dict[id] == "middle_third"
@@ -136,7 +150,7 @@ class FirstGameLevel:
             self.enemy_state_dict[id] = "right_third"
 
         goal_x = x_min + random() * (x_max - x_min)
-        goal_y = y_bound + random() * (self.height - 2*y_bound)
+        goal_y = y_min + random() * (y_max - y_min)
         self.goal_dict[wow_tag.id] = (goal_x, goal_y)
 
     def get_goals_and_sprites(self, manual_movement, wow_tags):
@@ -172,13 +186,13 @@ class FirstGameLevel:
             if not wow_tag.id in self.goal_dict:
                 # This is the first time we're seeing this robot.  Choose a
                 # random goal and store it in goal_dict and  
-                self._set_enemy_goal(wow_tag)
+                self._set_enemy_goal(wow_tag, wow_tags)
             else:
                 # This robot has a goal, if its reached it we'll set a new one.
                 (x, y) = wow_tag.x, wow_tag.y
                 (goal_x, goal_y) = self.goal_dict[wow_tag.id]
                 if hypot(goal_x - x, goal_y - y) < 50:
-                    self._set_enemy_goal(wow_tag)
+                    self._set_enemy_goal(wow_tag, wow_tags)
 
         self.update_sprites(wow_tags)
 
