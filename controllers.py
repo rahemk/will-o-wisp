@@ -8,7 +8,18 @@ from math import atan2, cos, sin
 
 # This is a rather unneccessary dependency, but I like pygame's vector class.
 from pygame.math import Vector2
- 
+
+'''
+def compute_curves(controller, wow_tags, goal_dict):
+    curves = []
+    for wow_tag in wow_tags:
+        if not wow_tag.id in goal_dict:
+            continue
+        points = controller.get_curve_points(Vector2(wow_tag.x, wow_tag.y), wow_tag.angle, goal_dict[wow_tag.id])
+        curves.append(points)
+    return curves
+'''
+
 class AbstractController(ABC):
  
     def __init__(self, value):
@@ -28,12 +39,20 @@ class SmoothController1(AbstractController):
         self.K_v = 1
         self.K_omega = 0.02
 
-    def get_curve_points(self, start_pos, start_angle, goal_pos):
+    def get_curve_points(self, journey):
+        start_pos = Vector2(journey.start_x, journey.start_y)
+
+        # Adjust the start position, by shifting it forwards to begin underneath the
+        # robot's front sensor array.
+        ahead_distance = 20
+        start_pos += Vector2(ahead_distance * cos(journey.start_angle), ahead_distance * sin(journey.start_angle))
+
+        goal_pos = Vector2(journey.goal_x, journey.goal_y)
         curve_vertex_list = [start_pos]
 
         x = start_pos.x
         y = start_pos.y
-        theta = start_angle
+        theta = journey.start_angle
 
         while (goal_pos - Vector2(x, y)).magnitude() > 5:
 

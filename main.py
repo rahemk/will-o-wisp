@@ -13,18 +13,9 @@ from game_screen import GameScreen
 
 # Customize the level and controller.
 from levels import FirstGameLevel
+from control_image_generator import ControlImageGenerator
 from controllers import SmoothController1
-controller = SmoothController1()
-
-def compute_curves(wow_tags, goal_dict):
-    curves = []
-    for wow_tag in wow_tags:
-        if not wow_tag.id in goal_dict:
-            continue
-        points = controller.get_curve_points(Vector2(wow_tag.x, wow_tag.y), wow_tag.angle, goal_dict[wow_tag.id])
-        curves.append(points)
-    return curves
-
+control_image_generator = ControlImageGenerator(SmoothController1())
 
 if __name__ == "__main__":
 
@@ -83,12 +74,12 @@ if __name__ == "__main__":
         manual_movement = game_screen.get_movement()
 
         # The level is responsibility for determine the application's evolution.
-        # This is communicated in a dictionary of goals for tags (i.e. robots)
+        # This is communicated in a dictionary of journeys for tags (i.e. robots)
         # and a list of sprites which are graphical elements.  They are not
         # robots, but could be drawn adjacent to a robot.
-        goal_dict, sprites = level.get_goals_and_sprites(manual_movement, wow_tags)
+        journey_dict, sprites = level.get_journeys_and_sprites(manual_movement, wow_tags)
 
-        control_curves = compute_curves(wow_tags, goal_dict)
+        control_curves = control_image_generator.generate(wow_tags, journey_dict)
 
         game_screen.update(wow_tags, control_curves, sprites)
 

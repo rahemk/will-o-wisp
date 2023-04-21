@@ -1,5 +1,5 @@
 '''
-A level determines the augmented goals produced by each robot.  These goals 
+A level determines the journeys required for each robot.  These goals 
 could be manual (i.e. from keyboard input) or autonomous, as determined by the
 level.  A goal can be augmented with game_appearance and game_action, which are
 labels that affect how the robot is displayed and 
@@ -18,8 +18,16 @@ class AbstractLevel(ABC):
         super().__init__()
     
     @abstractmethod
-    def get_goals_and_sprites(self, manual_movement, tags):
+    def get_journeys_and_sprites(self, manual_movement, tags):
         pass
+
+class Journey:
+    def __init__(self, start_x, start_y, start_angle, goal_x, goal_y):
+        self.start_x = start_x
+        self.start_y = start_y
+        self.start_angle = start_angle
+        self.goal_x = goal_x
+        self.goal_y = goal_y
 
 class Sprite:
     def __init__(self, centre_vec, velocity_vec, inner_radius, outer_radius, colour, time_to_live=None):
@@ -66,40 +74,40 @@ class TestLevel:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.goal_dict = {}
+        self.journey_dict = {}
 
     def _set_random_goal(self, wow_tag):
         xbound = self.width / 5
         ybound = self.height / 5
         goal_x = xbound + random() * (self.width - 2*xbound)
         goal_y = ybound + random() * (self.height - 2*ybound)
-        self.goal_dict[wow_tag.id] = (goal_x, goal_y)
+        self.journey_dict[wow_tag.id] = Journey(wow_tag.x, wow_tag.y, wow_tag.angle, goal_x, goal_y)
 
-    def get_goals_and_sprites(self, manual_movement, wow_tags):
+    def get_journeys_and_sprites(self, manual_movement, wow_tags):
         for wow_tag in wow_tags:
             if wow_tag.id == 0:
                 goal_tuple = get_player_movement_goal(manual_movement, wow_tag)
                 if goal_tuple is None:
-                    # Remove goal if previously set.
-                    if wow_tag.id in self.goal_dict:
-                        self.goal_dict.pop(wow_tag.id)
+                    # Remove journey if previously set.
+                    if wow_tag.id in self.journey_dict:
+                        self.journey_dict.pop(wow_tag.id)
                 else: 
-                    self.goal_dict[wow_tag.id] = goal_tuple
+                    self.journey_dict[wow_tag.id] = Journey(wow_tag.x, wow_tag.y, wow_tag.angle, goal_tuple[0], goal_tuple[1])
                 continue
 
-            if not wow_tag.id in self.goal_dict:
+            if not wow_tag.id in self.journey_dict:
                 # This is the first time we're seeing this robot.  Choose a
-                # random goal and store it in goal_dict and  
+                # random goal and store it in journey_dict.
                 self._set_random_goal(wow_tag)
             else:
                 # This robot has a goal, if its reached it we'll set a new one.
                 (x, y) = wow_tag.x, wow_tag.y
-                (goal_x, goal_y) = self.goal_dict[wow_tag.id]
-                if hypot(goal_x - x, goal_y - y) < 50:
+                journey = self.journey_dict[wow_tag.id]
+                if hypot(journey.goal_x - x, journey.goal_y - y) < 50:
                     self._set_random_goal(wow_tag)
 
         # This is not a game, so the list of sprites is empty.
-        return self.goal_dict, []
+        return self.journey_dict, []
 
 '''
 Robot 0 manually controlled and can fire sprites.
@@ -109,7 +117,7 @@ class FirstGameLevel:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.goal_dict = {}
+        self.journey_dict = {}
         self.enemy_state_dict = {}
         self.fire_timeout_dict = {}
         self.graveyard_list = []
@@ -121,22 +129,32 @@ class FirstGameLevel:
     def _set_enemy_goal(self, wow_tag, wow_tags):
         '''An enemy will alternate between goals in the middle third of the
         environment and goals in the right third.'''
-        boundary_buffer = self.width / 5
+
+        # Buffer with the outside boundary of the environment.  i.e. don't choose
+        # a goal position closer than this.
+        boundary_buffer = self.height / 10
+
+        # Buffer between the horizontal bands.  These bands (described below)
+        # are intended to keep enemy robots apart.
         band_buffer = 25
         
         # These width and height 
-        width = self.width - 2*buffer
-        height = self.height - 2*buffer
+        width = self.width - 2*boundary_buffer
+        height = self.height - 2*boundary_buffer
 
         # Also, to reduce the chances of collision we'll split the vertical
         # dimension into bands where each robot tries to stay within its closest
         # band.
-        n_enemies = len(wow_tags) - 1
-        tags_sorted_by_y = sorted(wow_tags, key=lambda tag: tag.y)
+
+        enemy_tags = [tag for tag in wow_tags if tag.id != 0]
+        n_enemies = len(enemy_tags)
+        print(f"n_enemies: {n_enemies}")
+        tags_sorted_by_y = sorted(enemy_tags, key=lambda tag: tag.y)
         i = tags_sorted_by_y.index(wow_tag)
         assert i != -1
-        y_min = boundary_buffer + ((i-1)/n_enemies) * height + band_buffer
-        y_max = boundary_buffer + (i/n_enemies) * height - band_buffer
+        y_min = boundary_buffer + (i/n_enemies) * height + band_buffer
+        y_max = boundary_buffer + ((i+1)/n_enemies) * height - band_buffer
+        print(f"min, max: {y_min}, {y_max}")
 
         id = wow_tag.id
         if id not in self.enemy_state_dict or self.enemy_state_dict[id] == "right_third":
@@ -151,9 +169,9 @@ class FirstGameLevel:
 
         goal_x = x_min + random() * (x_max - x_min)
         goal_y = y_min + random() * (y_max - y_min)
-        self.goal_dict[wow_tag.id] = (goal_x, goal_y)
+        self.journey_dict[wow_tag.id] = Journey(wow_tag.x, wow_tag.y, wow_tag.angle, goal_x, goal_y)
 
-    def get_goals_and_sprites(self, manual_movement, wow_tags):
+    def get_journeys_and_sprites(self, manual_movement, wow_tags):
         for wow_tag in wow_tags:
             # Dead robots don't move.
             if wow_tag.id in self.graveyard_list:
@@ -164,10 +182,10 @@ class FirstGameLevel:
                 goal_tuple = get_player_movement_goal(manual_movement, wow_tag)
                 if goal_tuple is None:
                     # Remove goal if previously set.
-                    if wow_tag.id in self.goal_dict:
-                        self.goal_dict.pop(wow_tag.id)
+                    if wow_tag.id in self.journey_dict:
+                        self.journey_dict.pop(wow_tag.id)
                 else: 
-                    self.goal_dict[wow_tag.id] = goal_tuple
+                    self.journey_dict[wow_tag.id] = Journey(wow_tag.x, wow_tag.y, wow_tag.angle, goal_tuple[0], goal_tuple[1])
 
                 if manual_movement == "fire":
                     if not wow_tag.id in self.fire_timeout_dict:
@@ -183,15 +201,15 @@ class FirstGameLevel:
                 continue
 
             # Enemy behaviour.  If they have a goal
-            if not wow_tag.id in self.goal_dict:
+            if not wow_tag.id in self.journey_dict:
                 # This is the first time we're seeing this robot.  Choose a
-                # random goal and store it in goal_dict and  
+                # random goal and store it in journey_dict and  
                 self._set_enemy_goal(wow_tag, wow_tags)
             else:
                 # This robot has a goal, if its reached it we'll set a new one.
                 (x, y) = wow_tag.x, wow_tag.y
-                (goal_x, goal_y) = self.goal_dict[wow_tag.id]
-                if hypot(goal_x - x, goal_y - y) < 50:
+                journey = self.journey_dict[wow_tag.id]
+                if hypot(journey.goal_x - x, journey.goal_y - y) < 50:
                     self._set_enemy_goal(wow_tag, wow_tags)
 
         self.update_sprites(wow_tags)
@@ -200,7 +218,7 @@ class FirstGameLevel:
             if self.fire_timeout_dict[id] > 0:
                 self.fire_timeout_dict[id] -= 1
 
-        return self.goal_dict, self.player_bullet_sprites + self. enemy_bullet_sprites + self.deco_sprites
+        return self.journey_dict, self.player_bullet_sprites + self. enemy_bullet_sprites + self.deco_sprites
 
     def enemies_firing_at_player(self, player_tag, wow_tags):
         '''The enemies will fire at the player if angled to potentially hit it.'''
@@ -237,7 +255,7 @@ class FirstGameLevel:
                     b.terminate = True
                     if not wow_tag.id in self.graveyard_list:
                         self.graveyard_list.append(wow_tag.id)
-                        self.goal_dict.pop(wow_tag.id)
+                        self.journey_dict.pop(wow_tag.id)
                         self.deco_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(0, 0), 50, 100, "red"))
 
     def check_bullet_player_collisions(self, player_tag, wow_tags):

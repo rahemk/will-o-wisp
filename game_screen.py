@@ -8,10 +8,10 @@ POSE_RADIUS = 65
 
 class GameScreen:
     def __init__(self, width, height):
-        os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
+        #os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
         pg.init()
         self.screen = pg.display.set_mode((width, height), flags=pg.SCALED)
-        #pg.display.toggle_fullscreen()
+        pg.display.toggle_fullscreen()
         self.terminate = False
 
         self.debug_level = 1
