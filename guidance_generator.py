@@ -47,7 +47,7 @@ class GuidanceGenerator:
                 # arcs.append(arc)
 
                 start_angle = normalize_angle_0_2pi(-wow_tag.angle)
-                print(f"alpha: {alpha} , start_angle: {start_angle}")
+                #print(f"alpha: {alpha} , start_angle: {start_angle}")
                 if alpha < 0:
                     arc = Arc(wow_tag.x, wow_tag.y, start_angle - ARC_END, start_angle - ARC_START)
                 else:

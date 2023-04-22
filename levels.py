@@ -9,8 +9,11 @@ from abc import ABC, abstractmethod
 from random import random
 from math import atan2, cos, hypot, pi, sin
 
+from utils.angles import get_smallest_angular_difference
 from utils.vector2d import Vector2D
 from wow_tag import WowTag
+
+BULLET_TIME_TO_LIVE = 25
 
 class AbstractLevel(ABC):
     def __init__(self, value):
@@ -45,7 +48,7 @@ class Sprite:
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         self.colour = colour
-        self.time_to_live = None
+        self.time_to_live = time_to_live
 
         self.terminate = False
     def update(self):
@@ -55,7 +58,7 @@ class Sprite:
             if self.time_to_live > 0:
                 self.time_to_live -= 1
             else:
-                self.terminate = False
+                self.terminate = True
 
 def get_player_movement_goal(manual_movement, wow_tag):
     if manual_movement == "forward":
@@ -121,7 +124,8 @@ class TestLevel(AbstractLevel):
         sprites = []
         for id in self.journey_dict:
             journey = self.journey_dict[id]
-            sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 15, 16, "green"))
+            sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 1, 10, "purple"))
+            sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 5, 16, "green"))
         return sprites
 
 '''
@@ -147,11 +151,11 @@ class FirstGameLevel(AbstractLevel):
 
         # Buffer with the outside boundary of the environment.  i.e. don't choose
         # a goal position closer than this.
-        boundary_buffer = self.height / 10
+        boundary_buffer = self.height / 5
 
         # Buffer between the horizontal bands.  These bands (described below)
         # are intended to keep enemy robots apart.
-        band_buffer = 25
+        band_buffer = 50
         
         # These width and height 
         width = self.width - 2*boundary_buffer
@@ -210,7 +214,7 @@ class FirstGameLevel(AbstractLevel):
 
                     vx = 20 * cos(wow_tag.angle)
                     vy = 20 * sin(wow_tag.angle)
-                    self.player_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "green", time_to_live=100))
+                    self.player_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "green", time_to_live=BULLET_TIME_TO_LIVE))
                     self.fire_timeout_dict[wow_tag.id] = 10
 
                 continue
@@ -236,6 +240,13 @@ class FirstGameLevel(AbstractLevel):
         return self.journey_dict
 
     def get_sprites(self):
+
+        #goal_sprites = []
+        #for id in self.journey_dict:
+        #    journey = self.journey_dict[id]
+        #    goal_sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 1, 10, "purple"))
+        #return self.player_bullet_sprites + self. enemy_bullet_sprites + self.deco_sprites + goal_sprites
+
         return self.player_bullet_sprites + self. enemy_bullet_sprites + self.deco_sprites
 
     def _enemies_firing_at_player(self, player_tag, wow_tags):
@@ -249,8 +260,9 @@ class FirstGameLevel(AbstractLevel):
                 continue
             enemy_vec = Vector2D(wow_tag.x, wow_tag.y)
             vec = player_vec - enemy_vec
-            angle_to_player = atan2(vec.y, vec.x) - wow_tag.angle
-            if abs(angle_to_player) < pi/8:
+            angle_to_player = get_smallest_angular_difference(atan2(vec.y, vec.x), wow_tag.angle)
+            assert angle_to_player >= 0
+            if angle_to_player < pi/8:
                 if not wow_tag.id in self.fire_timeout_dict:
                     self.fire_timeout_dict[wow_tag.id] = 0
                 elif self.fire_timeout_dict[wow_tag.id] > 0:
@@ -258,7 +270,7 @@ class FirstGameLevel(AbstractLevel):
 
                 vx = 20 * cos(wow_tag.angle)
                 vy = 20 * sin(wow_tag.angle)
-                self.enemy_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "blue", time_to_live=100))
+                self.enemy_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "blue", time_to_live=BULLET_TIME_TO_LIVE))
                 self.fire_timeout_dict[wow_tag.id] = 10
 
     def _check_bullet_enemy_collisions(self, wow_tags):

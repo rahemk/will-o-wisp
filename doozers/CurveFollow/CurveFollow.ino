@@ -13,7 +13,7 @@ Sensor reading 2000 = black light
 
 // If the absolute value of the balance factor exceeds this threshold, do
 // an in-place turn as opposed to forward movement.
-const double IN_PLACE_TURN_THRESHOLD = 0.5;
+const double IN_PLACE_TURN_THRESHOLD = 0.2;
 
 // Motion-related constant which may need to be tuned.
 const double TURN_FACTOR = 0.6;
@@ -21,6 +21,7 @@ const double TURN_FACTOR = 0.6;
 // Maximum speed to apply to setSpeeds.  Nominally, this is 400 but we can
 // decrease it to slow the robot down.
 const int MAX_SPEED = 400;
+const int IN_PLACE_MAX_SPEED = 150;
 
 const double MAX_SENSOR_VALUE = 2000;
 const int NUM_SENSORS = 4;
@@ -130,11 +131,11 @@ void loop()
     int16_t rightSpeed = 0;
     if (abs(balance) > IN_PLACE_TURN_THRESHOLD) {
         if (balance > 0) {
-            leftSpeed = -MAX_SPEED;
-            rightSpeed = MAX_SPEED;
+            leftSpeed = -IN_PLACE_MAX_SPEED;
+            rightSpeed = IN_PLACE_MAX_SPEED;
         } else {
-            leftSpeed = MAX_SPEED;
-            rightSpeed = -MAX_SPEED;
+            leftSpeed = IN_PLACE_MAX_SPEED;
+            rightSpeed = -IN_PLACE_MAX_SPEED;
         }
     } else {
         // These values are in the range [-1, 1].
@@ -145,27 +146,27 @@ void loop()
         // setSpeeds expects values in the range [-400, 400].
         leftSpeed = (int16_t)(MAX_SPEED * rawLeftSpeed);
         rightSpeed = (int16_t)(MAX_SPEED * rawRightSpeed);
+
+        Serial.print("GO. l, cl, cr, r: ");
+        Serial.print(l);
+        Serial.print(" ");
+        Serial.print(cl);
+        Serial.print(" ");
+        Serial.print(cr);
+        Serial.print(" ");
+        Serial.print(r);
+        Serial.print(", balance: ");
+        Serial.print(balance);
+        Serial.print(", raw speeds: ");
+        Serial.print(rawLeftSpeed);
+        Serial.print("  ");
+        Serial.print(rawRightSpeed);
+        Serial.print(", speeds: ");
+        Serial.print(leftSpeed);
+        Serial.print(" ");
+        Serial.print(rightSpeed);
+        Serial.print("\n");
     }
 
     motors.setSpeeds(leftSpeed, rightSpeed);
-
-    Serial.print("GO. l, cl, cr, r: ");
-    Serial.print(l);
-    Serial.print(" ");
-    Serial.print(cl);
-    Serial.print(" ");
-    Serial.print(cr);
-    Serial.print(" ");
-    Serial.print(r);
-    Serial.print(", balance: ");
-    Serial.print(balance);
-    Serial.print(", raw speeds: ");
-    Serial.print(rawLeftSpeed);
-    Serial.print("  ");
-    Serial.print(rawRightSpeed);
-    Serial.print(", speeds: ");
-    Serial.print(leftSpeed);
-    Serial.print(" ");
-    Serial.print(rightSpeed);
-    Serial.print("\n");
 }
