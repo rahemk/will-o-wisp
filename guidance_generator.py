@@ -4,6 +4,10 @@ from utils.angles import get_smallest_signed_angular_difference, normalize_angle
 # This is a rather unneccessary dependency, but I like pygame's vector class.
 from pygame.math import Vector2
 
+# An arc has a fixed angular extent, defined by these constants.
+ARC_START = pi/8
+ARC_END = 3*pi/4
+
 class Arc:
     def __init__(self, start_x, start_y, start_angle, stop_angle):
         self.start_x = start_x
@@ -24,7 +28,6 @@ class GuidanceGenerator:
                 continue
 
             journey = journey_dict[id]
-            #alpha = get_smallest_signed_angular_difference(journey.start_angle, atan2(journey.goal_y - journey.start_y, journey.goal_x - journey.start_x))
             alpha = get_smallest_signed_angular_difference(wow_tag.angle, atan2(journey.goal_y - wow_tag.y, journey.goal_x - wow_tag.x))
 
             if abs(alpha) < pi/8:
@@ -46,9 +49,9 @@ class GuidanceGenerator:
                 start_angle = normalize_angle_0_2pi(-wow_tag.angle)
                 print(f"alpha: {alpha} , start_angle: {start_angle}")
                 if alpha < 0:
-                    arc = Arc(wow_tag.x, wow_tag.y, start_angle - pi/2, start_angle)
+                    arc = Arc(wow_tag.x, wow_tag.y, start_angle - ARC_END, start_angle - ARC_START)
                 else:
-                    arc = Arc(wow_tag.x, wow_tag.y, start_angle, start_angle + pi/2)
+                    arc = Arc(wow_tag.x, wow_tag.y, start_angle + ARC_START, start_angle + ARC_END)
                 arcs.append(arc)
 
                 # While we're in the mode of generating arcs, we're not using the journey's start angle 

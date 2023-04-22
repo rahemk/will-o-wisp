@@ -11,6 +11,10 @@ Sensor reading 2000 = black light
 #include <Wire.h>
 #include <Zumo32U4.h>
 
+// If the absolute value of the balance factor exceeds this threshold, do
+// an in-place turn as opposed to forward movement.
+const double IN_PLACE_TURN_THRESHOLD = 0.5;
+
 // Motion-related constant which may need to be tuned.
 const double TURN_FACTOR = 0.6;
 
@@ -120,16 +124,30 @@ void loop()
     // left; +1 when it is on the right.
     double balance = 0.5 * (l + cl - cr - r);
 
-    // These values are in the range [-1, 1].
-    double rawLeftSpeed = (1 - TURN_FACTOR) - TURN_FACTOR * balance;
-    double rawRightSpeed = (1 - TURN_FACTOR) + TURN_FACTOR * balance;
+    // If |balance| exceeds the threshold, then do in in-place turn.  Otherwise
+    // move forward to minimize balance.
+    int16_t leftSpeed = 0;
+    int16_t rightSpeed = 0;
+    if (abs(balance) > IN_PLACE_TURN_THRESHOLD) {
+        if (balance > 0) {
+            leftSpeed = -MAX_SPEED;
+            rightSpeed = MAX_SPEED;
+        } else {
+            leftSpeed = MAX_SPEED;
+            rightSpeed = -MAX_SPEED;
+        }
+    } else {
+        // These values are in the range [-1, 1].
+        double rawLeftSpeed = (1 - TURN_FACTOR) - TURN_FACTOR * balance;
+        double rawRightSpeed = (1 - TURN_FACTOR) + TURN_FACTOR * balance;
 
-    // Scale up to the maximum speed of the robot for each wheel.
-    // setSpeeds expects values in the range [-400, 400].
-    int16_t scaledLeftSpeed = (int16_t)(MAX_SPEED * rawLeftSpeed);
-    int16_t scaledRightSpeed = (int16_t)(MAX_SPEED * rawRightSpeed);
+        // Scale up to the maximum speed of the robot for each wheel.
+        // setSpeeds expects values in the range [-400, 400].
+        leftSpeed = (int16_t)(MAX_SPEED * rawLeftSpeed);
+        rightSpeed = (int16_t)(MAX_SPEED * rawRightSpeed);
+    }
 
-    motors.setSpeeds(scaledLeftSpeed, scaledRightSpeed);
+    motors.setSpeeds(leftSpeed, rightSpeed);
 
     Serial.print("GO. l, cl, cr, r: ");
     Serial.print(l);
@@ -145,9 +163,9 @@ void loop()
     Serial.print(rawLeftSpeed);
     Serial.print("  ");
     Serial.print(rawRightSpeed);
-    Serial.print(", scaled speeds: ");
-    Serial.print(scaledLeftSpeed);
+    Serial.print(", speeds: ");
+    Serial.print(leftSpeed);
     Serial.print(" ");
-    Serial.print(scaledRightSpeed);
+    Serial.print(rightSpeed);
     Serial.print("\n");
 }

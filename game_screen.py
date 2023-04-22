@@ -82,7 +82,7 @@ class GameScreen:
                 n_points = 10
                 points = []
                 for i in range(n_points):
-                    angle = 2*pi * i / (n_points - 1)
+                    angle = 2*pi * i / n_points
                     radius = sprite.inner_radius + random() * (sprite.outer_radius - sprite.inner_radius)
                     points.append(Vector2(sprite.centre_vec.x + radius * cos(angle), \
                                           sprite.centre_vec.y + radius * sin(angle)))
