@@ -75,9 +75,9 @@ if __name__ == "__main__":
 
         # The level is responsibility for determine the application's evolution.
         # This is communicated in a dictionary of journeys for tags (i.e. robots)
-        # and a list of sprites which are graphical elements.  They are not
-        # robots, but could be drawn adjacent to a robot.
-        journey_dict, sprites = level.get_journeys_and_sprites(manual_movement, wow_tags)
+        # and a list of sprites which are graphical elements.
+        journey_dict = level.get_journey_dict(manual_movement, wow_tags)
+        sprites = level.get_sprites()
 
         arcs, curves = guidance_generator.generate(wow_tags, journey_dict)
 

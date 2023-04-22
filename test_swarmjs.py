@@ -11,5 +11,5 @@ if __name__ == "__main__":
 
     wow_tags = [WowTag(0, 541, 260, -0.5), WowTag(1, 745, 182, -1.5)]
     level = SwarmJSLevel("IGNORED PARAMS")
-    goals = level.get_goals("", wow_tags)
-    print(goals)
+    journey_dict = level.get_journey_dict("", wow_tags)
+    print(journey_dict)

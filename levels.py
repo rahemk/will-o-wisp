@@ -17,9 +17,18 @@ class AbstractLevel(ABC):
         self.value = value
         super().__init__()
     
+    # Updates the level and returns a dictionary of journey objects which
+    # specify each robot's "intentions".  This dictionary is keyed by WowTag
+    # id's (which in turn come from AprilTag id's).
     @abstractmethod
-    def get_journeys_and_sprites(self, manual_movement, tags):
+    def get_journey_dict(self, manual_movement, wow_tags):
         pass
+
+    # A level might also have sprites---graphical elements that are passed
+    # on to display.  This is optional, so derived classes can just use this
+    # one if they don't have any sprites to show.
+    def get_sprites(self):
+        return []
 
 class Journey:
     def __init__(self, start_x, start_y, start_angle, goal_x, goal_y):
@@ -69,7 +78,7 @@ def get_player_movement_goal(manual_movement, wow_tag):
 Robot 0 manually controlled.  All others are given random goals upon entry.  New
 random goals are given once they get close to their current goal.
 '''
-class TestLevel:
+class TestLevel(AbstractLevel):
 
     def __init__(self, width, height):
         self.width = width
@@ -83,7 +92,7 @@ class TestLevel:
         goal_y = ybound + random() * (self.height - 2*ybound)
         self.journey_dict[wow_tag.id] = Journey(wow_tag.x, wow_tag.y, wow_tag.angle, goal_x, goal_y)
 
-    def get_journeys_and_sprites(self, manual_movement, wow_tags):
+    def get_journey_dict(self, manual_movement, wow_tags):
         for wow_tag in wow_tags:
             if wow_tag.id == 0:
                 goal_tuple = get_player_movement_goal(manual_movement, wow_tag)
@@ -106,13 +115,12 @@ class TestLevel:
                 if hypot(journey.goal_x - x, journey.goal_y - y) < 50:
                     self._set_random_goal(wow_tag)
 
-        # This is not a game, so the list of sprites is empty.
-        return self.journey_dict, []
+        return self.journey_dict
 
 '''
 Robot 0 manually controlled and can fire sprites.
 '''
-class FirstGameLevel:
+class FirstGameLevel(AbstractLevel):
 
     def __init__(self, width, height):
         self.width = width
@@ -148,13 +156,13 @@ class FirstGameLevel:
 
         enemy_tags = [tag for tag in wow_tags if tag.id != 0]
         n_enemies = len(enemy_tags)
-        print(f"n_enemies: {n_enemies}")
+        #print(f"n_enemies: {n_enemies}")
         tags_sorted_by_y = sorted(enemy_tags, key=lambda tag: tag.y)
         i = tags_sorted_by_y.index(wow_tag)
         assert i != -1
         y_min = boundary_buffer + (i/n_enemies) * height + band_buffer
         y_max = boundary_buffer + ((i+1)/n_enemies) * height - band_buffer
-        print(f"min, max: {y_min}, {y_max}")
+        #print(f"min, max: {y_min}, {y_max}")
 
         id = wow_tag.id
         if id not in self.enemy_state_dict or self.enemy_state_dict[id] == "right_third":
@@ -171,7 +179,7 @@ class FirstGameLevel:
         goal_y = y_min + random() * (y_max - y_min)
         self.journey_dict[wow_tag.id] = Journey(wow_tag.x, wow_tag.y, wow_tag.angle, goal_x, goal_y)
 
-    def get_journeys_and_sprites(self, manual_movement, wow_tags):
+    def get_journey_dict(self, manual_movement, wow_tags):
         for wow_tag in wow_tags:
             # Dead robots don't move.
             if wow_tag.id in self.graveyard_list:
@@ -212,15 +220,18 @@ class FirstGameLevel:
                 if hypot(journey.goal_x - x, journey.goal_y - y) < 50:
                     self._set_enemy_goal(wow_tag, wow_tags)
 
-        self.update_sprites(wow_tags)
+        self._update_sprites(wow_tags)
 
         for id in self.fire_timeout_dict:
             if self.fire_timeout_dict[id] > 0:
                 self.fire_timeout_dict[id] -= 1
 
-        return self.journey_dict, self.player_bullet_sprites + self. enemy_bullet_sprites + self.deco_sprites
+        return self.journey_dict
 
-    def enemies_firing_at_player(self, player_tag, wow_tags):
+    def get_sprites(self):
+        return self.player_bullet_sprites + self. enemy_bullet_sprites + self.deco_sprites
+
+    def _enemies_firing_at_player(self, player_tag, wow_tags):
         '''The enemies will fire at the player if angled to potentially hit it.'''
 
         if player_tag is None or 0 in self.graveyard_list:
@@ -243,7 +254,7 @@ class FirstGameLevel:
                 self.enemy_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "blue", time_to_live=100))
                 self.fire_timeout_dict[wow_tag.id] = 10
 
-    def check_bullet_enemy_collisions(self, wow_tags):
+    def _check_bullet_enemy_collisions(self, wow_tags):
         '''Check for collision between the player's bullet sprites and enemy tags.'''
 
         for b in self.player_bullet_sprites:
@@ -258,7 +269,7 @@ class FirstGameLevel:
                         self.journey_dict.pop(wow_tag.id)
                         self.deco_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(0, 0), 50, 100, "red"))
 
-    def check_bullet_player_collisions(self, player_tag, wow_tags):
+    def _check_bullet_player_collisions(self, player_tag, wow_tags):
         '''Check for collision between the enemies' bullet sprites and the player.'''
         if player_tag is None:
             return
@@ -273,7 +284,7 @@ class FirstGameLevel:
                     game_over_sprite.text = "Game Over!"
                     self.deco_sprites.append(game_over_sprite)
 
-    def update_sprites(self, wow_tags):
+    def _update_sprites(self, wow_tags):
         for sprite in self.player_bullet_sprites + self.enemy_bullet_sprites:
             sprite.update()
 
@@ -282,9 +293,9 @@ class FirstGameLevel:
             if wow_tag.id == 0:
                 player_tag = wow_tag
                 break
-        self.enemies_firing_at_player(player_tag, wow_tags)
-        self.check_bullet_enemy_collisions(wow_tags)
-        self.check_bullet_player_collisions(player_tag, wow_tags)
+        self._enemies_firing_at_player(player_tag, wow_tags)
+        self._check_bullet_enemy_collisions(wow_tags)
+        self._check_bullet_player_collisions(player_tag, wow_tags)
 
         self.player_bullet_sprites = [b for b in self.player_bullet_sprites if not b.terminate]
         self.enemy_bullet_sprites = [b for b in self.enemy_bullet_sprites if not b.terminate]
