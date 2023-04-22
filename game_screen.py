@@ -92,8 +92,13 @@ class GameScreen:
                 pg.draw.circle(self.screen, "black", Vector2(sprite.centre_vec.x, sprite.centre_vec.y), sprite.inner_radius)
 
         for arc in control_arcs:
+            # Setting a non-zero width in the arc function leaves holes.  We fill these in
+            # by drawing it multiple times at slightly shifted positions.
             rect = pg.Rect(arc.start_x - ARC_RADIUS, arc.start_y - ARC_RADIUS, 2*ARC_RADIUS, 2*ARC_RADIUS)
             pg.draw.arc(self.screen, "white", rect, arc.start_angle, arc.stop_angle, width=20)
+            pg.draw.arc(self.screen, "white", rect.move(0,1), arc.start_angle, arc.stop_angle, width=20)
+            pg.draw.arc(self.screen, "white", rect.move(1,0), arc.start_angle, arc.stop_angle, width=20)
+            pg.draw.arc(self.screen, "white", rect.move(1,1), arc.start_angle, arc.stop_angle, width=20)
 
         for curve in control_curves:
             pg.draw.lines(self.screen, "white", False, curve, 20)

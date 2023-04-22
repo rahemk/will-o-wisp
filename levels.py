@@ -117,6 +117,13 @@ class TestLevel(AbstractLevel):
 
         return self.journey_dict
 
+    def get_sprites(self):
+        sprites = []
+        for id in self.journey_dict:
+            journey = self.journey_dict[id]
+            sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 15, 16, "green"))
+        return sprites
+
 '''
 Robot 0 manually controlled and can fire sprites.
 '''

@@ -35,12 +35,20 @@ class GuidanceGenerator:
             else:
                 # Generate arc.  The following ridiculous normalizing and sign-flipping is all to
                 # satisfy pygame's arc drawing function.
+                # start_angle = normalize_angle_0_2pi(-wow_tag.angle)
+                # stop_angle = normalize_angle_0_2pi(-wow_tag.angle + alpha)
+                # if start_angle < stop_angle:
+                #     arc = Arc(wow_tag.x, wow_tag.y, start_angle, stop_angle)
+                # else:
+                #     arc = Arc(wow_tag.x, wow_tag.y, stop_angle, start_angle)
+                # arcs.append(arc)
+
                 start_angle = normalize_angle_0_2pi(-wow_tag.angle)
-                stop_angle = normalize_angle_0_2pi(-wow_tag.angle + alpha)
-                if start_angle < stop_angle:
-                    arc = Arc(wow_tag.x, wow_tag.y, start_angle, stop_angle)
+                print(f"alpha: {alpha} , start_angle: {start_angle}")
+                if alpha < 0:
+                    arc = Arc(wow_tag.x, wow_tag.y, start_angle - pi/2, start_angle)
                 else:
-                    arc = Arc(wow_tag.x, wow_tag.y, stop_angle, start_angle)
+                    arc = Arc(wow_tag.x, wow_tag.y, start_angle, start_angle + pi/2)
                 arcs.append(arc)
 
                 # While we're in the mode of generating arcs, we're not using the journey's start angle 
