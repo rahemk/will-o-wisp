@@ -4,6 +4,8 @@ from pygame.math import Vector2
 from math import cos, pi, sin
 from random import random
 
+ARC_RADIUS = 50
+
 POSE_RADIUS = 65
 
 class GameScreen:
@@ -50,7 +52,7 @@ class GameScreen:
     def get_movement(self):
         return self.movement
 
-    def update(self, wow_tags, control_curves, sprites):
+    def update(self, wow_tags, control_arcs, control_curves, sprites):
         # Fill the screen to wipe away anything from last frame
         self.screen.fill("black")
 
@@ -88,6 +90,10 @@ class GameScreen:
                 # Fill the centre with black, so in the case of flames on a dying
                 # robot, it doesn't trigger movement.
                 pg.draw.circle(self.screen, "black", Vector2(sprite.centre_vec.x, sprite.centre_vec.y), sprite.inner_radius)
+
+        for arc in control_arcs:
+            rect = pg.Rect(arc.start_x - ARC_RADIUS, arc.start_y - ARC_RADIUS, 2*ARC_RADIUS, 2*ARC_RADIUS)
+            pg.draw.arc(self.screen, "white", rect, arc.start_angle, arc.stop_angle, width=20)
 
         for curve in control_curves:
             pg.draw.lines(self.screen, "white", False, curve, 20)

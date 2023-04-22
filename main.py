@@ -13,9 +13,9 @@ from game_screen import GameScreen
 
 # Customize the level and controller.
 from levels import FirstGameLevel
-from control_image_generator import ControlImageGenerator
+from guidance_generator import GuidanceGenerator
 from controllers import SmoothController1
-control_image_generator = ControlImageGenerator(SmoothController1())
+guidance_generator = GuidanceGenerator(SmoothController1())
 
 if __name__ == "__main__":
 
@@ -79,9 +79,9 @@ if __name__ == "__main__":
         # robots, but could be drawn adjacent to a robot.
         journey_dict, sprites = level.get_journeys_and_sprites(manual_movement, wow_tags)
 
-        control_curves = control_image_generator.generate(wow_tags, journey_dict)
+        arcs, curves = guidance_generator.generate(wow_tags, journey_dict)
 
-        game_screen.update(wow_tags, control_curves, sprites)
+        game_screen.update(wow_tags, arcs, curves, sprites)
 
         if cfg.show_input:
             resize_divisor = 1

@@ -44,11 +44,11 @@ class SmoothController1(AbstractController):
 
         # Adjust the start position, by shifting it forwards to begin underneath the
         # robot's front sensor array.
-        ahead_distance = 20
-        start_pos += Vector2(ahead_distance * cos(journey.start_angle), ahead_distance * sin(journey.start_angle))
+        #ahead_distance = 20
+        #start_pos += Vector2(ahead_distance * cos(journey.start_angle), ahead_distance * sin(journey.start_angle))
 
         goal_pos = Vector2(journey.goal_x, journey.goal_y)
-        curve_vertex_list = [start_pos]
+        curve_vertex_list = [(int(journey.start_x), int(journey.start_y))]
 
         x = start_pos.x
         y = start_pos.y
@@ -72,6 +72,6 @@ class SmoothController1(AbstractController):
             y += y_dot * self.delta_t
             theta += omega * self.delta_t
 
-            curve_vertex_list.append(Vector2(x, y))
+            curve_vertex_list.append((int(x), int(y)))
 
         return curve_vertex_list
