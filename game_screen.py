@@ -5,6 +5,7 @@ from math import cos, pi, sin
 from random import random
 
 ARC_RADIUS = 50
+ARC_THICKNESS = 30
 
 POSE_RADIUS = 65
 
@@ -13,7 +14,7 @@ class GameScreen:
         #os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
         pg.init()
         self.screen = pg.display.set_mode((width, height), flags=pg.SCALED)
-        #pg.display.toggle_fullscreen()
+        pg.display.toggle_fullscreen()
         self.terminate = False
 
         self.debug_level = 1
@@ -103,10 +104,10 @@ class GameScreen:
             # Setting a non-zero width in the arc function leaves holes.  We fill these in
             # by drawing it multiple times at slightly shifted positions.
             rect = pg.Rect(arc.start_x - ARC_RADIUS, arc.start_y - ARC_RADIUS, 2*ARC_RADIUS, 2*ARC_RADIUS)
-            pg.draw.arc(self.screen, "white", rect, arc.start_angle, arc.stop_angle, width=20)
-            pg.draw.arc(self.screen, "white", rect.move(0,1), arc.start_angle, arc.stop_angle, width=20)
-            pg.draw.arc(self.screen, "white", rect.move(1,0), arc.start_angle, arc.stop_angle, width=20)
-            pg.draw.arc(self.screen, "white", rect.move(1,1), arc.start_angle, arc.stop_angle, width=20)
+            pg.draw.arc(self.screen, "white", rect, arc.start_angle, arc.stop_angle, width=ARC_THICKNESS)
+            pg.draw.arc(self.screen, "white", rect.move(0,1), arc.start_angle, arc.stop_angle, width=ARC_THICKNESS)
+            pg.draw.arc(self.screen, "white", rect.move(1,0), arc.start_angle, arc.stop_angle, width=ARC_THICKNESS)
+            pg.draw.arc(self.screen, "white", rect.move(1,1), arc.start_angle, arc.stop_angle, width=ARC_THICKNESS)
 
         for curve in control_curves:
             pg.draw.lines(self.screen, "white", False, curve, 20)

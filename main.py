@@ -12,8 +12,8 @@ from config_loader import ConfigLoader
 from game_screen import GameScreen
 
 # Customize the level and controller.
-from levels import TestLevel
-#from swarmjs_level import SwarmJSLevel
+from levels import TestLevel, FirstGameLevel
+from swarmjs_level import SwarmJSLevel
 from guidance_generator import GuidanceGenerator
 from controllers import SmoothController1
 guidance_generator = GuidanceGenerator(SmoothController1())
@@ -24,8 +24,8 @@ if __name__ == "__main__":
 
     game_screen = GameScreen(cfg.output_width, cfg.output_height)
 
-    level = TestLevel(cfg.output_width, cfg.output_height)
-    #level = FirstGameLevel(cfg.output_width, cfg.output_height)
+    #level = TestLevel(cfg.output_width, cfg.output_height)
+    level = FirstGameLevel(cfg.output_width, cfg.output_height)
     #level = SwarmJSLevel(None)
 
     apriltag_detector = Detector(
@@ -106,5 +106,7 @@ if __name__ == "__main__":
 
         elapsed = time.time() - start_time
         #print(f"loop elapsed time: {elapsed}")
+
+        #time.sleep(0.1)
 
     cap.release()

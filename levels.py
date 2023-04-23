@@ -13,7 +13,7 @@ from utils.angles import get_smallest_angular_difference
 from utils.vector2d import Vector2D
 from wow_tag import WowTag
 
-BULLET_TIME_TO_LIVE = 25
+BULLET_TIME_TO_LIVE = 15
 
 class AbstractLevel(ABC):
     def __init__(self, value):

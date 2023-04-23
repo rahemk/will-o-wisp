@@ -4,6 +4,7 @@
 # robotGoalsAndWaypoints = {}
 
 from levels import AbstractLevel
+from math import hypot
 
 '''
 Provides a connection to the SwarmJS simulator, which will serve as a source of goals 
@@ -21,7 +22,7 @@ import threading
 
 eventlet.monkey_patch()
 
-logging = False
+logging = True
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret_key'
@@ -86,13 +87,23 @@ def on_goals(data):
 # Start Socket.IO server on a separate thread
 def start_socketio_server():
     print('starting server on second thread')
-    socketio.run(app, debug=False)
+    socketio.run(app, port=5133, debug=False)
 
 def start_server():
     print('starting server')
     socketio_thread = threading.Thread(target=start_socketio_server)
     socketio_thread.start()
     print('server started')
+
+
+class Journey:
+    def __init__(self, start_x, start_y, start_angle, goal_x, goal_y):
+        self.start_x = start_x
+        self.start_y = start_y
+        self.start_angle = start_angle
+        self.goal_x = goal_x
+        self.goal_y = goal_y
+
 
 class SwarmJSLevel(AbstractLevel):
     def __init__(self, ADD_ANY_NECESSARY_PARAMS_LIKE_WIDTH_OR_HEIGHT):
@@ -114,10 +125,11 @@ class SwarmJSLevel(AbstractLevel):
             strId = str(wow_tag.id)
             newPositions[strId] = { 'x': wow_tag.x, 'y': wow_tag.y, 'angle': wow_tag.angle}
             if strId in robotGoalsAndWaypoints:
-                self.journey_dict[wow_tag.id] = (wow_tag.x, wow_tag.y, wow_tag.angle, robotGoalsAndWaypoints[strId]['waypoint']['x'], robotGoalsAndWaypoints[strId]['waypoint']['y'])
-            else:
-                if logging:
-                    print('goal for robot ', wow_tag.id, ' not found')
+                if (hypot(wow_tag.x - robotGoalsAndWaypoints[strId]['waypoint']['x'], wow_tag.y - robotGoalsAndWaypoints[strId]['waypoint']['y']) > 50):
+                    self.journey_dict[wow_tag.id] = Journey(wow_tag.x, wow_tag.y, wow_tag.angle, robotGoalsAndWaypoints[strId]['waypoint']['x'], robotGoalsAndWaypoints[strId]['waypoint']['y'])
+            # else:
+                # if logging:
+                    # print('goal for robot ', wow_tag.id, ' not found')
 
         robotPositions = newPositions
         return self.journey_dict
