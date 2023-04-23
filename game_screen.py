@@ -13,7 +13,7 @@ class GameScreen:
         #os.environ['SDL_VIDEO_WINDOW_POS'] = "1920,0"
         pg.init()
         self.screen = pg.display.set_mode((width, height), flags=pg.SCALED)
-        pg.display.toggle_fullscreen()
+        #pg.display.toggle_fullscreen()
         self.terminate = False
 
         self.debug_level = 1
@@ -21,11 +21,14 @@ class GameScreen:
         self.font = pg.freetype.SysFont('arial', 18)
         self.big_font = pg.freetype.SysFont('arial', 36)
 
+        self.screenshot_index = 0
+        self.do_screenshot = False
+
     def handle_events(self):
         self.movement = ""
 
         # Handle events, including key-presses that occur when the key is
-        # pressend down, but not subsequently.
+        # pressed down, but not subsequently.
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.terminate = True
@@ -35,6 +38,8 @@ class GameScreen:
                         self.debug_level += 1
                     else:
                         self.debug_level = 0
+                if event.key == pg.K_s:
+                    self.do_screenshot = True
 
         # Handle key presses (key could be held down).
         keys = pg.key.get_pressed()
@@ -51,6 +56,9 @@ class GameScreen:
 
     def get_movement(self):
         return self.movement
+
+    def get_do_screenshot(self):
+        return self.do_screenshot, self.screenshot_index
 
     def update(self, wow_tags, control_arcs, control_curves, sprites):
         # Fill the screen to wipe away anything from last frame
@@ -105,6 +113,15 @@ class GameScreen:
 
         # flip() the display to put your work on screen
         pg.display.flip()
+
+        if self.do_screenshot:
+            filename = f"screenshots/screen_{self.screenshot_index:02}.png"
+            try:
+                pg.image.save(self.screen, filename)
+            except:
+                print(f"Problem writing to {filename}.")
+            self.screenshot_index += 1
+            self.do_screenshot = False
 
         if self.terminate:
             self.close()

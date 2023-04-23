@@ -5,8 +5,8 @@
     "input_height": 1348,
     "output_width": 1011,
     "output_height": 674,
-    "upper_left": [427, 100],
-    "upper_right": [1570, 401],
-    "lower_right": [1809, 997],
-    "lower_left": [168, 801]
+    "upper_left": [419, 38],
+    "upper_right": [1586, 387],
+    "lower_right": [1799, 1015],
+    "lower_left": [176, 820]
 }

@@ -12,7 +12,8 @@ from config_loader import ConfigLoader
 from game_screen import GameScreen
 
 # Customize the level and controller.
-from levels import FirstGameLevel
+from levels import TestLevel
+#from swarmjs_level import SwarmJSLevel
 from guidance_generator import GuidanceGenerator
 from controllers import SmoothController1
 guidance_generator = GuidanceGenerator(SmoothController1())
@@ -23,7 +24,9 @@ if __name__ == "__main__":
 
     game_screen = GameScreen(cfg.output_width, cfg.output_height)
 
-    level = FirstGameLevel(cfg.output_width, cfg.output_height)
+    level = TestLevel(cfg.output_width, cfg.output_height)
+    #level = FirstGameLevel(cfg.output_width, cfg.output_height)
+    #level = SwarmJSLevel(None)
 
     apriltag_detector = Detector(
        families="tag36h11",
@@ -71,6 +74,8 @@ if __name__ == "__main__":
         wow_tags = raw_tags_to_wow_tags(raw_tags)
 
         game_screen.handle_events()
+        do_screenshot, screenshot_index = game_screen.get_do_screenshot()
+
         manual_movement = game_screen.get_movement()
 
         # The level is responsibility for determine the application's evolution.
@@ -82,6 +87,15 @@ if __name__ == "__main__":
         arcs, curves = guidance_generator.generate(wow_tags, journey_dict)
 
         game_screen.update(wow_tags, arcs, curves, sprites)
+
+        if do_screenshot:
+            filename_raw = f"screenshots/raw_{screenshot_index:02}.png"
+            filename_warped = f"screenshots/warped_{screenshot_index:02}.png"
+            try:
+                cv2.imwrite(filename_raw, raw_image)
+                cv2.imwrite(filename_warped, warped_image)
+            except:
+                print(f"Problem writing to {filename_raw} or {filename_warped}")
 
         if cfg.show_input:
             resize_divisor = 1
