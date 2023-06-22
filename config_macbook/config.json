@@ -1,6 +1,7 @@
 {
     "video_channel": 0,
-    "show_input": 0,
+    "show_input": 1,
+    "fullscreen": 0,
     "input_width": 2022,
     "input_height": 1348,
     "output_width": 1011,

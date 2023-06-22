@@ -6,8 +6,8 @@ import json
 import numpy as np
 
 # There are two local config files.  We'll decide which to open right here:
-venue = 'lab'
-#venue = 'macbook'
+#venue = 'lab'
+venue = 'macbook'
 
 config_dir = f'config_{venue}'
 config_filename = f'{config_dir}/config.json'
@@ -19,6 +19,7 @@ calib_D_filename = f'{calib_dir}/calib_D.json'
 class Config:
     video_channel = None
     show_input = None
+    fullscreen = None
     output_width = None
     output_height = None
     screen_corners = None
@@ -43,6 +44,7 @@ class ConfigLoader:
 
             ConfigLoader._config.video_channel = dict['video_channel']
             ConfigLoader._config.show_input = bool(dict['show_input'])
+            ConfigLoader._config.fullscreen = bool(dict['fullscreen'])
             ConfigLoader._config.input_width = dict['input_width']
             ConfigLoader._config.input_height = dict['input_height']
             ConfigLoader._config.output_width = dict['output_width']

@@ -18,11 +18,24 @@ from guidance_generator import GuidanceGenerator
 from controllers import SmoothController1
 guidance_generator = GuidanceGenerator(SmoothController1())
 
+def preprocess(raw_image, cfg):
+    # Undistort the raw image.  This also has to be done in picker.py so that
+    # the picked corners used to build the homography matrix are consistent.
+    h, w = raw_image.shape[:2]
+    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(cfg.calib_K, cfg.calib_D, (w,h), 1, (w,h))
+    undistorted = cv2.undistort(raw_image, cfg.calib_K, cfg.calib_D, None, newcameramtx)
+
+    # Warp the raw image.
+    warped_image = cv2.warpPerspective(undistorted, homography, (cfg.output_width, cfg.output_height))
+    gray_image = cv2.cvtColor(warped_image, cv2.COLOR_BGR2GRAY)
+
+    return gray_image, warped_image
+
 if __name__ == "__main__":
 
     cfg = ConfigLoader.get()
 
-    game_screen = GameScreen(cfg.output_width, cfg.output_height)
+    game_screen = GameScreen(cfg.output_width, cfg.output_height, cfg.fullscreen)
 
     #level = TestLevel(cfg.output_width, cfg.output_height)
     level = FirstGameLevel(cfg.output_width, cfg.output_height)
@@ -59,15 +72,7 @@ if __name__ == "__main__":
             print('Cannot read video.')
             break
 
-        # Undistort the raw image.  This also has to be done in picker.py so that
-        # the picked corners used to build the homography matrix are consistent.
-        h, w = raw_image.shape[:2]
-        newcameramtx, roi = cv2.getOptimalNewCameraMatrix(cfg.calib_K, cfg.calib_D, (w,h), 1, (w,h))
-        undistorted = cv2.undistort(raw_image, cfg.calib_K, cfg.calib_D, None, newcameramtx)
-
-        # Warp the raw image.
-        warped_image = cv2.warpPerspective(undistorted, homography, (cfg.output_width, cfg.output_height))
-        gray_image = cv2.cvtColor(warped_image, cv2.COLOR_BGR2GRAY)
+        gray_image, warped_image = preprocess(raw_image, cfg)
 
         raw_tags = apriltag_detector.detect(gray_image)
 
