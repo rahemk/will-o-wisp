@@ -8,7 +8,6 @@ from config_loader import ConfigLoader
 cfg = ConfigLoader.get()
 
 def mouse_callback(event, x, y, flags, param):
-    print("MOUSE")
     if event == cv2.EVENT_LBUTTONDOWN:
         clicked_points.append((x, y))
         print(clicked_points)

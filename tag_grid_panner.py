@@ -16,7 +16,7 @@ class TagGridPanner:
         self.height = height
         self.tag_size = tag_size
 
-        os.environ['SDL_VIDEO_WINDOW_POS'] = "2200,0"
+        #os.environ['SDL_VIDEO_WINDOW_POS'] = "2200,0"
         pg.init()
         self.screen = pg.display.set_mode((width, height), flags=pg.SCALED)
         if fullscreen:
@@ -83,8 +83,8 @@ class TagGridPanner:
         for i in range(2, self.height - 1):
             if self.height % i == 0:
                 height_factors.append(i)
-        print(width_factors)
-        print(height_factors)
+        #print(width_factors)
+        #print(height_factors)
         
         # Choose increasing width factors.  For each one, select the closest
         # height factor that approximately matches the image's aspect ratio.
@@ -101,7 +101,7 @@ class TagGridPanner:
 
             m = width_factor - 1
             n = best_height_factor - 1
-            print(f"potential m, n: {m}, {n}")
+            #print(f"potential m, n: {m}, {n}")
             assert (self.width % (m + 1) == 0), "width must be divisible by m + 1"
             assert (self.height % (n + 1) == 0), "height must be divisible by n + 1"
 
@@ -113,12 +113,12 @@ class TagGridPanner:
             # Is this pair of m, n suitable?
             if gx >= minimum_gap/2 and gy >= minimum_gap/2:
                 suitable_m_n_pairs.append((m, n))
-                print(f"suitable gx, gy: {gx}, {gy}")
-            else:
-                print(f"unsuitable gx, gy: {gx}, {gy}")
+            #    print(f"suitable gx, gy: {gx}, {gy}")
+            #else:
+            #    print(f"unsuitable gx, gy: {gx}, {gy}")
 
         # Choose the last (and largest) suitable pair of m and n.
-        print(f"suitable (m, n) pairs: {suitable_m_n_pairs}")
+        #print(f"suitable (m, n) pairs: {suitable_m_n_pairs}")
         m, n = suitable_m_n_pairs[-1]
         print(f"m, n: {m}, {n}")
         return m, n

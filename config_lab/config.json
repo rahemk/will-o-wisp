@@ -7,8 +7,8 @@
     "input_height": 1080,
     "output_width": 960,
     "output_height": 540,
-    "upper_left": [343, 41],
-    "upper_right": [1607, 42],
-    "lower_right": [1681, 795],
-    "lower_left": [59, 650]
+    "upper_left": [327, 230],
+    "upper_right": [1587, 214],
+    "lower_right": [1747, 946],
+    "lower_left": [170, 945]
 }

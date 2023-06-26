@@ -16,7 +16,7 @@ from image_processing import capture_and_preprocess
 if __name__ == "__main__":
 
     cfg = ConfigLoader.get()
-    tag_size = 150
+    tag_size = 50
     calibrate = True
 
     if cfg.show_input:
@@ -24,7 +24,7 @@ if __name__ == "__main__":
         cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
     #pp = pprint.PrettyPrinter(indent=4)
 
-    panner = TagGridPanner(cfg.output_width, cfg.output_height, tag_size, False)
+    panner = TagGridPanner(cfg.output_width, cfg.output_height, tag_size, cfg.fullscreen)
 
     tag_centres_image = np.zeros((cfg.output_height, cfg.output_width))
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cfg.input_height)
 
     if calibrate:
-        size = (cfg.input_height, cfg.input_width)
+        size = (cfg.output_height, cfg.output_width)
         tg_calib_count = np.zeros(size)
         tg_calib_x = np.zeros(size)
         tg_calib_y = np.zeros(size)
@@ -66,12 +66,12 @@ if __name__ == "__main__":
                 x, y = detected_tag.x, detected_tag.y
                 for ref_tag in reference_tags:
                     if detected_tag.id == ref_tag.id:
-                        if tg_calib_count[y,x] == 0:
-                            tg_calib_count[y,x] = 1
-                            tg_calib_x[y,x] = ref_tag.x
-                            tg_calib_y[y,x] = ref_tag.y
-                        else:
-                            print(f"multiple detected tags correspond to tag {ref_tag.id}")
+                        #if tg_calib_count[y,x] == 0:
+                        tg_calib_count[y,x] += 1
+                        tg_calib_x[y,x] = ref_tag.x
+                        tg_calib_y[y,x] = ref_tag.y
+                        #else:
+                        #    print(f"multiple detected tags correspond to tag {ref_tag.id}")
                     
         else:
             average_error = 0
