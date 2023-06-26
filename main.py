@@ -7,9 +7,10 @@ from math import atan2, cos, pi, sin
 # This is a rather unneccessary dependency, but I like pygame's vector class.
 from pygame.math import Vector2
 
-from wow_tag import WowTag, raw_tags_to_wow_tags
+from wow_tag import WowTag, raw_tags_to_wow_tags, apply_tg_calibration_to_raw_tags
 from config_loader import ConfigLoader
 from game_screen import GameScreen
+from image_processing import capture_and_preprocess
 
 # Customize the level and controller.
 from levels import TestLevel, FirstGameLevel
@@ -18,27 +19,14 @@ from guidance_generator import GuidanceGenerator
 from controllers import SmoothController1
 guidance_generator = GuidanceGenerator(SmoothController1())
 
-def preprocess(raw_image, cfg):
-    # Undistort the raw image.  This also has to be done in picker.py so that
-    # the picked corners used to build the homography matrix are consistent.
-    h, w = raw_image.shape[:2]
-    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(cfg.calib_K, cfg.calib_D, (w,h), 1, (w,h))
-    undistorted = cv2.undistort(raw_image, cfg.calib_K, cfg.calib_D, None, newcameramtx)
-
-    # Warp the raw image.
-    warped_image = cv2.warpPerspective(undistorted, homography, (cfg.output_width, cfg.output_height))
-    gray_image = cv2.cvtColor(warped_image, cv2.COLOR_BGR2GRAY)
-
-    return gray_image, warped_image
-
 if __name__ == "__main__":
 
     cfg = ConfigLoader.get()
 
     game_screen = GameScreen(cfg.output_width, cfg.output_height, cfg.fullscreen)
 
-    #level = TestLevel(cfg.output_width, cfg.output_height)
-    level = FirstGameLevel(cfg.output_width, cfg.output_height)
+    level = TestLevel(cfg.output_width, cfg.output_height)
+    #level = FirstGameLevel(cfg.output_width, cfg.output_height)
     #level = SwarmJSLevel(None)
 
     apriltag_detector = Detector(
@@ -54,6 +42,11 @@ if __name__ == "__main__":
     output_corners = [[0, 0], [cfg.output_width-1, 0], [cfg.output_width-1, cfg.output_height-1], [0, cfg.output_height-1]]
     homography, status = cv2.findHomography(np.array(cfg.screen_corners), np.array(output_corners))
 
+    if cfg.use_tg_calibration:
+        tg_calib_count = np.load("tg_calib_count.npy")
+        tg_calib_x = np.load("tg_calib_x.npy")
+        tg_calib_y = np.load("tg_calib_y.npy")
+
     if cfg.show_input:
         input_window_name = "Input"
         cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
@@ -67,14 +60,12 @@ if __name__ == "__main__":
 
         start_time = time.time()
 
-        ret, raw_image = cap.read()
-        if not ret:
-            print('Cannot read video.')
-            break
-
-        gray_image, warped_image = preprocess(raw_image, cfg)
+        gray_image, warped_image = capture_and_preprocess(cap, cfg, homography=homography)
 
         raw_tags = apriltag_detector.detect(gray_image)
+
+        if cfg.use_tg_calibration:
+            raw_tags = apply_tg_calibration_to_raw_tags(raw_tags, tg_calib_count, tg_calib_x, tg_calib_y)
 
         wow_tags = raw_tags_to_wow_tags(raw_tags)
 
@@ -94,13 +85,14 @@ if __name__ == "__main__":
         game_screen.update(wow_tags, arcs, curves, sprites)
 
         if do_screenshot:
-            filename_raw = f"screenshots/raw_{screenshot_index:02}.png"
+            #filename_raw = f"screenshots/raw_{screenshot_index:02}.png"
             filename_warped = f"screenshots/warped_{screenshot_index:02}.png"
             try:
-                cv2.imwrite(filename_raw, raw_image)
+                #cv2.imwrite(filename_raw, raw_image)
                 cv2.imwrite(filename_warped, warped_image)
             except:
-                print(f"Problem writing to {filename_raw} or {filename_warped}")
+                #print(f"Problem writing to {filename_raw} or {filename_warped}")
+                print(f"Problem writing to {filename_warped}")
 
         if cfg.show_input:
             resize_divisor = 1

@@ -20,6 +20,7 @@ class Config:
     video_channel = None
     show_input = None
     fullscreen = None
+    use_tg_calibration = None
     output_width = None
     output_height = None
     screen_corners = None
