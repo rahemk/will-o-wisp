@@ -1,7 +1,7 @@
 {
     "video_channel": 0,
     "show_input": 0,
-    "fullscreen": 1,
+    "fullscreen": 0,
     "use_tg_calibration": 1,
     "use_homography": 0,
     "input_width": 2022,
