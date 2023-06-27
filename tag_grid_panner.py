@@ -2,7 +2,7 @@
 Pans a grid of AprilTags across the screen.
 """
 
-import cv2, os
+import cv2, os, time
 import pygame as pg
 import numpy as np
 from pygame.math import Vector2
@@ -18,7 +18,7 @@ class TagGridPanner:
 
         #os.environ['SDL_VIDEO_WINDOW_POS'] = "2200,0"
         pg.init()
-        self.screen = pg.display.set_mode((width, height), flags=pg.SCALED)
+        self.screen = pg.display.set_mode((width, height), flags=pg.SCALED, vsync=1)
         if fullscreen:
             pg.display.toggle_fullscreen()
         self.terminate = False
@@ -163,7 +163,7 @@ class TagGridPanner:
 if __name__ == "__main__":
     width = 960
     height = 540
-    tag_size = 100
+    tag_size = 50
 
     # This image is just a debugging tool to show the image positions
     # covered over time by the tags below.

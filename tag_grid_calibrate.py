@@ -7,11 +7,13 @@ import cv2, json, pprint, time
 import numpy as np
 from pupil_apriltags import Detector
 from math import atan2, hypot, pi
+import matplotlib.pyplot as plt
+from scipy import signal
 
 from wow_tag import WowTag, raw_tags_to_wow_tags
 from config_loader import ConfigLoader
 from tag_grid_panner import TagGridPanner
-from image_processing import capture_and_preprocess
+from image_processing import capture_and_preprocess, interpolate_missing_values
 
 if __name__ == "__main__":
 
@@ -55,9 +57,11 @@ if __name__ == "__main__":
         tg_calib_count = np.zeros(size)
         tg_calib_x = np.zeros(size)
         tg_calib_y = np.zeros(size)
+        coverage_image = np.zeros(size)
 
     def callback(reference_tags):
-        #tag_centres_image = np.zeros((cfg.output_height, cfg.output_width))
+        #for tag in reference_tags:
+        #    coverage_image[tag.y, tag.x] += 100
 
         gray_image, warped_image = capture_and_preprocess(cap, cfg, homography=homography)
 
@@ -88,12 +92,8 @@ if __name__ == "__main__":
 
                 if matched_tag is not None:
                     average_error += hypot(ref_tag.x - matched_tag.x, ref_tag.y - matched_tag.y)
-                #tag_centres_image[tag.y, tag.x] = 255
             average_error /= len(reference_tags)
             print(f"average error: {average_error}")
-
-        #cv2.imshow("Detected Tag Centres", tag_centres_image.astype(np.uint8))
-        #cv2.waitKey(1)
 
         if cfg.show_input:
             resize_divisor = 1
@@ -106,6 +106,22 @@ if __name__ == "__main__":
 
     cap.release()
 
+    tg_calib_x_interp = interpolate_missing_values(tg_calib_x, tg_calib_count)
+    tg_calib_y_interp = interpolate_missing_values(tg_calib_y, tg_calib_count)
+    tg_calib_count_interp = interpolate_missing_values(tg_calib_count, tg_calib_count)
+
+    tg_calib_x_filtered = signal.medfilt2d(tg_calib_x_interp, 7)
+    tg_calib_y_filtered = signal.medfilt2d(tg_calib_y_interp, 7)
+
     np.save("tg_calib_count", tg_calib_count)
     np.save("tg_calib_x", tg_calib_x)
     np.save("tg_calib_y", tg_calib_y)
+    np.save("tg_calib_count_interp", tg_calib_count_interp)
+    np.save("tg_calib_x_interp", tg_calib_x_interp)
+    np.save("tg_calib_y_interp", tg_calib_y_interp)
+    np.save("tg_calib_x_filtered", tg_calib_x_filtered)
+    np.save("tg_calib_y_filtered", tg_calib_y_filtered)
+
+    cv2.imwrite("coverage.png", coverage_image.astype(np.uint8))
+    plt.imshow(coverage_image)
+    plt.show()

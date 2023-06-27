@@ -46,9 +46,9 @@ if __name__ == "__main__":
         homography, status = cv2.findHomography(np.array(cfg.screen_corners), np.array(output_corners))
 
     if cfg.use_tg_calibration:
-        tg_calib_count = np.load("tg_calib_count.npy")
-        tg_calib_x = np.load("tg_calib_x.npy")
-        tg_calib_y = np.load("tg_calib_y.npy")
+        tg_calib_count = np.load("tg_calib_count_interp.npy")
+        tg_calib_x = np.load("tg_calib_x_interp.npy")
+        tg_calib_y = np.load("tg_calib_y_interp.npy")
 
     if cfg.show_input:
         input_window_name = "Input"

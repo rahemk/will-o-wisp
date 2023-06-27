@@ -1,4 +1,6 @@
 import cv2
+import numpy as np
+from scipy import interpolate
 
 def capture_and_preprocess(cap, cfg, homography=None):
     ret, image = cap.read()
@@ -29,3 +31,26 @@ def capture_and_preprocess(cap, cfg, homography=None):
 # An attribute to the above function just so that we display the resize warning
 # only once.
 capture_and_preprocess.warned = False
+
+def interpolate_missing_values(image, image_with_zeros_for_missing):
+    # https://stackoverflow.com/questions/37662180/interpolate-missing-values-2d-python/39596856#39596856
+    mask = image_with_zeros_for_missing == 0
+
+    h, w = image.shape[:2]
+    xx, yy = np.meshgrid(np.arange(w), np.arange(h))
+
+    known_x = xx[~mask]
+    known_y = yy[~mask]
+    known_v = image[~mask]
+    missing_x = xx[mask]
+    missing_y = yy[mask]
+
+    interp_values = interpolate.griddata(
+        (known_x, known_y), known_v, (missing_x, missing_y),
+        method='linear', fill_value=0
+    )
+
+    interp_image = image.copy()
+    interp_image[missing_y, missing_x] = interp_values
+
+    return interp_image
