@@ -13,11 +13,13 @@ from game_screen import GameScreen
 from image_processing import capture_and_preprocess
 
 # Customize the level and controller.
-from levels import DummyLevel, TestLevel, FirstGameLevel
+from levels import DummyLevel, SynchronyLevel, TestLevel, FirstGameLevel
 from swarmjs_level import SwarmJSLevel
 from guidance_generator import GuidanceGenerator
-from controllers import SmoothController1
-guidance_generator = GuidanceGenerator(SmoothController1())
+#from controllers import SmoothController1
+from controllers import RRTDubinsController
+#guidance_generator = GuidanceGenerator(SmoothController1())
+guidance_generator = GuidanceGenerator(RRTDubinsController())
 
 if __name__ == "__main__":
 
@@ -25,8 +27,9 @@ if __name__ == "__main__":
 
     game_screen = GameScreen(cfg.output_width, cfg.output_height, cfg.fullscreen)
 
-    level = DummyLevel(cfg.output_width, cfg.output_height)
+    #level = DummyLevel(cfg.output_width, cfg.output_height)
     #level = TestLevel(cfg.output_width, cfg.output_height)
+    level = SynchronyLevel(cfg.output_width, cfg.output_height)
     #level = FirstGameLevel(cfg.output_width, cfg.output_height)
     #level = SwarmJSLevel(None)
 
@@ -47,7 +50,7 @@ if __name__ == "__main__":
 
     if cfg.use_tg_calibration:
         tg_calib_count = np.load("tg_calib_count_interp.npy")
-        tg_calib_x = np.load("tg_calib_x_interp.npy")
+        tg_calib_x = np.load("tg_calib_x_filtered.npy")
         tg_calib_y = np.load("tg_calib_y_interp.npy")
 
     if cfg.show_input:

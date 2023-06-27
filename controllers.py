@@ -6,6 +6,12 @@ from abc import ABC, abstractmethod
 from random import random
 from math import atan2, cos, sin
 
+from dpp.env.car import SimpleCar
+from dpp.env.environment import Environment
+from dpp.methods.rrt import RRT
+
+from time import time
+
 # This is a rather unneccessary dependency, but I like pygame's vector class.
 from pygame.math import Vector2
 
@@ -72,6 +78,38 @@ class SmoothController1(AbstractController):
             y += y_dot * self.delta_t
             theta += omega * self.delta_t
 
+            curve_vertex_list.append((int(x), int(y)))
+
+        return curve_vertex_list
+
+'''
+RRT Path Planning with Dubins model:
+https://github.com/jhan15/dubins_path_planning
+'''
+class RRTDubinsController(AbstractController):
+    def __init__(self):
+        pass
+
+    def get_curve_points(self, journey):
+
+        start_pos = [journey.start_x, journey.start_y, journey.start_angle]
+
+        # Goal angle.  What should this be???
+        goal_angle = journey.start_angle
+
+        end_pos = [journey.goal_x, journey.goal_y, goal_angle]
+
+        env = Environment()
+        car = SimpleCar(env, start_pos, end_pos)
+        rrt = RRT(car)
+        t = time()
+        path, nodes = rrt.search_path()
+        print('Total time: {}s'.format(round(time()-t, 3)))
+
+        curve_vertex_list = []
+        for i in range(len(path)):
+            x = path[i].pos[0]
+            y = path[i].pos[1]
             curve_vertex_list.append((int(x), int(y)))
 
         return curve_vertex_list

@@ -13,6 +13,7 @@ from utils.angles import get_smallest_angular_difference
 from utils.vector2d import Vector2D
 from wow_tag import WowTag
 
+PLAYER_TAG_ID = 1
 BULLET_TIME_TO_LIVE = 15
 
 class AbstractLevel(ABC):
@@ -89,9 +90,34 @@ class DummyLevel(AbstractLevel):
     def get_sprites(self):
         return []
 
+'''
+All robots manually controlled. 
+'''
+class SynchronyLevel(AbstractLevel):
+
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.journey_dict = {}
+
+    def get_journey_dict(self, manual_movement, wow_tags):
+        for wow_tag in wow_tags:
+            goal_tuple = get_player_movement_goal(manual_movement, wow_tag)
+            if goal_tuple is None:
+                # Remove journey if previously set.
+                if wow_tag.id in self.journey_dict:
+                    self.journey_dict.pop(wow_tag.id)
+            else: 
+                self.journey_dict[wow_tag.id] = Journey(wow_tag.x, wow_tag.y, wow_tag.angle, goal_tuple[0], goal_tuple[1])
+
+        return self.journey_dict
+
+    def get_sprites(self):
+        return []
+
 
 '''
-Robot 0 manually controlled.  All others are given random goals upon entry.  New
+Robot PLAYER_TAG_ID manually controlled.  All others are given random goals upon entry.  New
 random goals are given once they get close to their current goal.
 '''
 class TestLevel(AbstractLevel):
@@ -110,7 +136,7 @@ class TestLevel(AbstractLevel):
 
     def get_journey_dict(self, manual_movement, wow_tags):
         for wow_tag in wow_tags:
-            if wow_tag.id == 0:
+            if wow_tag.id == PLAYER_TAG_ID:
                 goal_tuple = get_player_movement_goal(manual_movement, wow_tag)
                 if goal_tuple is None:
                     # Remove journey if previously set.
@@ -142,7 +168,7 @@ class TestLevel(AbstractLevel):
         return sprites
 
 '''
-Robot 0 manually controlled and can fire sprites.
+Robot PLAYER_TAG_ID manually controlled and can fire sprites.
 '''
 class FirstGameLevel(AbstractLevel):
 
@@ -178,7 +204,7 @@ class FirstGameLevel(AbstractLevel):
         # dimension into bands where each robot tries to stay within its closest
         # band.
 
-        enemy_tags = [tag for tag in wow_tags if tag.id != 0]
+        enemy_tags = [tag for tag in wow_tags if tag.id != PLAYER_TAG_ID]
         n_enemies = len(enemy_tags)
         #print(f"n_enemies: {n_enemies}")
         tags_sorted_by_y = sorted(enemy_tags, key=lambda tag: tag.y)
@@ -209,7 +235,7 @@ class FirstGameLevel(AbstractLevel):
             if wow_tag.id in self.graveyard_list:
                 continue
 
-            if wow_tag.id == 0:
+            if wow_tag.id == PLAYER_TAG_ID:
                 # BAD: How do we avoid duplicating this code block?
                 goal_tuple = get_player_movement_goal(manual_movement, wow_tag)
                 if goal_tuple is None:
@@ -265,11 +291,11 @@ class FirstGameLevel(AbstractLevel):
     def _enemies_firing_at_player(self, player_tag, wow_tags):
         '''The enemies will fire at the player if angled to potentially hit it.'''
 
-        if player_tag is None or 0 in self.graveyard_list:
+        if player_tag is None or PLAYER_TAG_ID in self.graveyard_list:
             return
         player_vec = Vector2D(player_tag.x, player_tag.y)
         for wow_tag in wow_tags:
-            if wow_tag.id == 0 or wow_tag.id in self.graveyard_list:
+            if wow_tag.id == PLAYER_TAG_ID or wow_tag.id in self.graveyard_list:
                 continue
             enemy_vec = Vector2D(wow_tag.x, wow_tag.y)
             vec = player_vec - enemy_vec
@@ -291,7 +317,7 @@ class FirstGameLevel(AbstractLevel):
 
         for b in self.player_bullet_sprites:
             for wow_tag in wow_tags:
-                if wow_tag.id == 0:
+                if wow_tag.id == PLAYER_TAG_ID:
                     continue
                 tag_pos = Vector2D(wow_tag.x, wow_tag.y)
                 if Vector2D.Distance(tag_pos, b.centre_vec) < 50:
@@ -322,7 +348,7 @@ class FirstGameLevel(AbstractLevel):
 
         player_tag = None
         for wow_tag in wow_tags:
-            if wow_tag.id == 0:
+            if wow_tag.id == PLAYER_TAG_ID:
                 player_tag = wow_tag
                 break
         self._enemies_firing_at_player(player_tag, wow_tags)

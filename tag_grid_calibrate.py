@@ -18,7 +18,7 @@ from image_processing import capture_and_preprocess, interpolate_missing_values
 if __name__ == "__main__":
 
     cfg = ConfigLoader.get()
-    tag_size = 50
+    tag_size = 35
     calibrate = True
 
     if cfg.show_input:
@@ -110,8 +110,8 @@ if __name__ == "__main__":
     tg_calib_y_interp = interpolate_missing_values(tg_calib_y, tg_calib_count)
     tg_calib_count_interp = interpolate_missing_values(tg_calib_count, tg_calib_count)
 
-    tg_calib_x_filtered = signal.medfilt2d(tg_calib_x_interp, 7)
-    tg_calib_y_filtered = signal.medfilt2d(tg_calib_y_interp, 7)
+    tg_calib_x_filtered = signal.medfilt2d(tg_calib_x_interp, kernel_size=(5,21))
+    tg_calib_y_filtered = signal.medfilt2d(tg_calib_y_interp, kernel_size=9)
 
     np.save("tg_calib_count", tg_calib_count)
     np.save("tg_calib_x", tg_calib_x)
@@ -123,5 +123,5 @@ if __name__ == "__main__":
     np.save("tg_calib_y_filtered", tg_calib_y_filtered)
 
     cv2.imwrite("coverage.png", coverage_image.astype(np.uint8))
-    plt.imshow(coverage_image)
-    plt.show()
+    #plt.imshow(coverage_image)
+    #plt.show()
