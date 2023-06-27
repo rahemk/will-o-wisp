@@ -21,8 +21,9 @@ def apply_tg_calibration_to_raw_tags(raw_tags, tg_calib_count, tg_calib_x, tg_ca
     calibrated_tags = []
     for raw_tag in raw_tags:
 
-        index = raw_tag.center[1], raw_tag.center[0]
-        if tg_calib_count[index] != 1:
+        index = int(raw_tag.center[1]), int(raw_tag.center[0])
+        if tg_calib_count[index] == 0:
+            print("Rejected center.")
             continue
 
         raw_tag.center[0] = tg_calib_x[index]
@@ -30,16 +31,17 @@ def apply_tg_calibration_to_raw_tags(raw_tags, tg_calib_count, tg_calib_x, tg_ca
 
         valid = True
         for corner_i in range(4):
-            index = raw_tag.corners[corner_i, 1], raw_tag.center[corner_i, 0]
-            if tg_calib_count[index] != 1:
-                valid = False
-                break
+            index = int(raw_tag.corners[corner_i, 1]), int(raw_tag.corners[corner_i, 0])
+            #if tg_calib_count[index] == 0:
+            #    print("Rejected corner.")
+            #    valid = False
+            #    break
 
             raw_tag.corners[corner_i, 0] = tg_calib_x[index]
             raw_tag.corners[corner_i, 1] = tg_calib_y[index]
 
         if valid:
-            calibrated_tags = raw_tag
+            calibrated_tags.append(raw_tag)
 
     return calibrated_tags
 

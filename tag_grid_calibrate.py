@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     panner = TagGridPanner(cfg.output_width, cfg.output_height, tag_size, cfg.fullscreen)
 
-    tag_centres_image = np.zeros((cfg.output_height, cfg.output_width))
+    #tag_centres_image = np.zeros((cfg.output_height, cfg.output_width))
 
     apriltag_detector = Detector(
        families="tag36h11",
@@ -38,21 +38,26 @@ if __name__ == "__main__":
        debug=0
     )
 
-    output_corners = [[0, 0], [cfg.output_width-1, 0], [cfg.output_width-1, cfg.output_height-1], [0, cfg.output_height-1]]
-    homography, status = cv2.findHomography(np.array(cfg.screen_corners), np.array(output_corners))
+    homography = None
+    if cfg.use_homography:
+        output_corners = [[0, 0], [cfg.output_width-1, 0], [cfg.output_width-1, cfg.output_height-1], [0, cfg.output_height-1]]
+        homography, status = cv2.findHomography(np.array(cfg.screen_corners), np.array(output_corners))
 
     cap = cv2.VideoCapture(cfg.video_channel)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, cfg.input_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cfg.input_height)
 
     if calibrate:
-        size = (cfg.output_height, cfg.output_width)
+        if cfg.use_homography:
+            size = (cfg.output_height, cfg.output_width)
+        else:
+            size = (cfg.input_height, cfg.input_width)
         tg_calib_count = np.zeros(size)
         tg_calib_x = np.zeros(size)
         tg_calib_y = np.zeros(size)
 
     def callback(reference_tags):
-        tag_centres_image = np.zeros((cfg.output_height, cfg.output_width))
+        #tag_centres_image = np.zeros((cfg.output_height, cfg.output_width))
 
         gray_image, warped_image = capture_and_preprocess(cap, cfg, homography=homography)
 

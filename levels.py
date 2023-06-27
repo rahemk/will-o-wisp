@@ -77,6 +77,19 @@ def get_player_movement_goal(manual_movement, wow_tag):
     return goal_x, goal_y
 
 
+class DummyLevel(AbstractLevel):
+
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def get_journey_dict(self, manual_movement, wow_tags):
+        return {}
+
+    def get_sprites(self):
+        return []
+
+
 '''
 Robot 0 manually controlled.  All others are given random goals upon entry.  New
 random goals are given once they get close to their current goal.

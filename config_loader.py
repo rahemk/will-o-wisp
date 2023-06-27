@@ -21,6 +21,7 @@ class Config:
     show_input = None
     fullscreen = None
     use_tg_calibration = None
+    use_homography = None
     output_width = None
     output_height = None
     screen_corners = None
@@ -46,6 +47,8 @@ class ConfigLoader:
             ConfigLoader._config.video_channel = dict['video_channel']
             ConfigLoader._config.show_input = bool(dict['show_input'])
             ConfigLoader._config.fullscreen = bool(dict['fullscreen'])
+            ConfigLoader._config.use_tg_calibration = bool(dict['use_tg_calibration'])
+            ConfigLoader._config.use_homography = bool(dict['use_homography'])
             ConfigLoader._config.input_width = dict['input_width']
             ConfigLoader._config.input_height = dict['input_height']
             ConfigLoader._config.output_width = dict['output_width']

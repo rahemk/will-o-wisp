@@ -13,7 +13,7 @@ from game_screen import GameScreen
 from image_processing import capture_and_preprocess
 
 # Customize the level and controller.
-from levels import TestLevel, FirstGameLevel
+from levels import DummyLevel, TestLevel, FirstGameLevel
 from swarmjs_level import SwarmJSLevel
 from guidance_generator import GuidanceGenerator
 from controllers import SmoothController1
@@ -25,7 +25,8 @@ if __name__ == "__main__":
 
     game_screen = GameScreen(cfg.output_width, cfg.output_height, cfg.fullscreen)
 
-    level = TestLevel(cfg.output_width, cfg.output_height)
+    level = DummyLevel(cfg.output_width, cfg.output_height)
+    #level = TestLevel(cfg.output_width, cfg.output_height)
     #level = FirstGameLevel(cfg.output_width, cfg.output_height)
     #level = SwarmJSLevel(None)
 
@@ -39,8 +40,10 @@ if __name__ == "__main__":
        debug=0
     )
 
-    output_corners = [[0, 0], [cfg.output_width-1, 0], [cfg.output_width-1, cfg.output_height-1], [0, cfg.output_height-1]]
-    homography, status = cv2.findHomography(np.array(cfg.screen_corners), np.array(output_corners))
+    homography = None
+    if cfg.use_homography:
+        output_corners = [[0, 0], [cfg.output_width-1, 0], [cfg.output_width-1, cfg.output_height-1], [0, cfg.output_height-1]]
+        homography, status = cv2.findHomography(np.array(cfg.screen_corners), np.array(output_corners))
 
     if cfg.use_tg_calibration:
         tg_calib_count = np.load("tg_calib_count.npy")
@@ -97,8 +100,8 @@ if __name__ == "__main__":
         if cfg.show_input:
             resize_divisor = 1
             if resize_divisor > 1:
-                cv2.resizeWindow(input_window_name, warped_image.shape[1]//resize_divisor, warped_image.shape[0]//resize_divisor)
-            cv2.imshow(input_window_name, warped_image)
+                cv2.resizeWindow(input_window_name, gray_image.shape[1]//resize_divisor, gray_image.shape[0]//resize_divisor)
+            cv2.imshow(input_window_name, gray_image)
             cv2.waitKey(10)
 
         elapsed = time.time() - start_time
