@@ -3,20 +3,27 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
+from config_loader import venue
 
 if __name__ == "__main__":
 
-    tg_calib_count = np.load("tg_calib_count.npy")
-    tg_calib_x = np.load("tg_calib_x.npy")
-    tg_calib_y = np.load("tg_calib_y.npy")
-    tg_calib_count_interp = np.load("tg_calib_count_interp.npy")
-    tg_calib_x_interp = np.load("tg_calib_x_interp.npy")
-    tg_calib_y_interp = np.load("tg_calib_y_interp.npy")
+    directory = f"tg_calib_{venue}/delta_1"
 
+    tg_calib_count = np.load(f"{directory}/tg_calib_count.npy")
+    tg_calib_x = np.load(f"{directory}/tg_calib_x.npy")
+    tg_calib_y = np.load(f"{directory}/tg_calib_y.npy")
+    tg_calib_count_interp = np.load(f"{directory}/tg_calib_count_interp.npy")
+    tg_calib_x_interp = np.load(f"{directory}/tg_calib_x_interp.npy")
+    tg_calib_y_interp = np.load(f"{directory}/tg_calib_y_interp.npy")
+    tg_calib_x_filtered = np.load(f"{directory}/tg_calib_x_filtered.npy")
+    tg_calib_y_filtered = np.load(f"{directory}/tg_calib_y_filtered.npy")
+
+    '''
     tg_calib_x_filtered = signal.medfilt2d(tg_calib_x_interp, kernel_size=(5,21))
     tg_calib_y_filtered = signal.medfilt2d(tg_calib_y_interp, kernel_size=9)
     np.save("tg_calib_x_filtered", tg_calib_x_filtered)
     np.save("tg_calib_y_filtered", tg_calib_y_filtered)
+    '''
 
     #fig, axs = plt.subplots(1, 1)
     #axs.imshow(tg_calib_count)

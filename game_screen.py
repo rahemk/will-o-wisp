@@ -64,12 +64,6 @@ class GameScreen:
 
     def update(self, wow_tags, control_arcs, control_curves, sprites, background_image=None):
         if background_image is not None:
-            #image = pg.surfarray.make_surface(background_image)
-            #self.screen.blit(image, (0, 0))
-            print(self.screen)
-            print(self.screen.get_size())
-            print(self.screen.get_bitsize())
-            print(self.screen.get_bytesize())
             pg.surfarray.blit_array(self.screen, background_image)
         else:
             # Fill the screen to wipe away anything from last frame

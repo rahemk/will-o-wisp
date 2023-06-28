@@ -96,11 +96,11 @@ class GuidanceImageGenerator:
 
         # Creating this image with width rows and height columns to match
         # pygame, even though its in violation of normal numpy convention
-        image = np.zeros((self.width, self.height, 3))
+        image = np.zeros((self.width, self.height))
         for curve in curves:
             for point in curve:
-                image[point[0], point[1], :] = 2**32 - 1
+                image[point[0], point[1]] = 2**32 - 1
 
-        #image = ndimage.grey_dilation(image, size=(10, 10))
+        image = ndimage.grey_dilation(image, size=(10, 10))
 
         return image
