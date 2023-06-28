@@ -71,7 +71,7 @@ def get_player_movement_goal(manual_movement, wow_tag):
     else:# manual_movement == "":
         return None
 
-    d = 100
+    d = 125
     goal_x = wow_tag.x + d * cos(wow_tag.angle + delta_angle)
     goal_y = wow_tag.y + d * sin(wow_tag.angle + delta_angle)
 
@@ -154,7 +154,7 @@ class TestLevel(AbstractLevel):
                 # This robot has a goal, if its reached it we'll set a new one.
                 (x, y) = wow_tag.x, wow_tag.y
                 journey = self.journey_dict[wow_tag.id]
-                if hypot(journey.goal_x - x, journey.goal_y - y) < 50:
+                if hypot(journey.goal_x - x, journey.goal_y - y) <= 100:
                     self._set_random_goal(wow_tag)
 
         return self.journey_dict
@@ -163,8 +163,10 @@ class TestLevel(AbstractLevel):
         sprites = []
         for id in self.journey_dict:
             journey = self.journey_dict[id]
-            sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 1, 10, "purple"))
-            sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 5, 16, "green"))
+            sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 20, 30, "green"))
+            goal_id_sprite = Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 0, 0, "white")
+            goal_id_sprite.text = str(id)
+            sprites.append(goal_id_sprite)
         return sprites
 
 '''

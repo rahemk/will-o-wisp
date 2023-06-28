@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from scipy import ndimage
 from math import atan2, pi
-from utils.angles import get_smallest_signed_angular_difference, normalize_angle_0_2pi
+from utils.angles import get_smallest_signed_angular_difference, normalize_angle_0_2pi, normalize_angle_pm_pi
 
 # This is a rather unneccessary dependency, but I like pygame's vector class.
 from pygame.math import Vector2
@@ -36,8 +36,10 @@ class CurveArcGenerator:
 
             journey = journey_dict[id]
             alpha = get_smallest_signed_angular_difference(wow_tag.angle, atan2(journey.goal_y - wow_tag.y, journey.goal_x - wow_tag.x))
+            #alpha = atan2(journey.goal_y - wow_tag.y, journey.goal_x - wow_tag.x) - wow_tag.angle
+            #alpha = normalize_angle_pm_pi(alpha)
 
-            if True: #abs(alpha) < pi/8:
+            if abs(alpha) < pi/8:
                 # Generate curve for this tag.
                 points = self.controller.get_curve_points(journey_dict[id])
                 curves.append(points)
@@ -88,18 +90,27 @@ class GuidanceImageGenerator:
                 continue
 
             journey = journey_dict[id]
-            alpha = get_smallest_signed_angular_difference(wow_tag.angle, atan2(journey.goal_y - wow_tag.y, journey.goal_x - wow_tag.x))
+
+            # The journey's start angle or start position may be growing "stale" as the robot shifts.
+            journey.start_x = wow_tag.x
+            journey.start_y = wow_tag.y
+            journey.start_angle = wow_tag.angle
+
+            #alpha = get_smallest_signed_angular_difference(wow_tag.angle, atan2(journey.goal_y - wow_tag.y, journey.goal_x - wow_tag.x))
 
             # Generate curve for this tag.
-            points = self.controller.get_curve_points(journey_dict[id])
+            points = self.controller.get_curve_points(journey)
             curves.append(points)
 
         # Creating this image with width rows and height columns to match
         # pygame, even though its in violation of normal numpy convention
         image = np.zeros((self.width, self.height))
         for curve in curves:
-            for point in curve:
-                image[point[0], point[1]] = 2**32 - 1
+            for x, y in curve:
+                if x < 0 or x >= self.width or y < 0 or y >= self.height:
+                    continue
+                else:
+                    image[x, y] = 2**32 - 1
 
         image = ndimage.grey_dilation(image, size=(10, 10))
 
