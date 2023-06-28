@@ -6,11 +6,7 @@ from abc import ABC, abstractmethod
 from random import random
 from math import atan2, cos, sin
 
-from dpp.env.car import SimpleCar
-from dpp.env.environment import Environment
-from dpp.methods.rrt import RRT
-
-from time import time
+from PathPlanning.DubinsPath.dubins_path_planner import plan_dubins_path
 
 # This is a rather unneccessary dependency, but I like pygame's vector class.
 from pygame.math import Vector2
@@ -83,33 +79,29 @@ class SmoothController1(AbstractController):
         return curve_vertex_list
 
 '''
-RRT Path Planning with Dubins model:
-https://github.com/jhan15/dubins_path_planning
+Dubins model:
+https://atsushisakai.github.io/PythonRobotics/
 '''
-class RRTDubinsController(AbstractController):
+class DubinsController(AbstractController):
     def __init__(self):
         pass
 
     def get_curve_points(self, journey):
 
-        start_pos = [journey.start_x, journey.start_y, journey.start_angle]
-
-        # Goal angle.  What should this be???
-        goal_angle = journey.start_angle
-
-        end_pos = [journey.goal_x, journey.goal_y, goal_angle]
-
-        env = Environment()
-        car = SimpleCar(env, start_pos, end_pos)
-        rrt = RRT(car)
-        t = time()
-        path, nodes = rrt.search_path()
-        print('Total time: {}s'.format(round(time()-t, 3)))
+        start_x = journey.start_x
+        start_y = journey.start_y
+        start_yaw = journey.start_angle
+        end_x = journey.goal_x
+        end_y = journey.goal_y
+        end_yaw = journey.start_angle
+        curvature = 1/50.0
+        path_x, path_y, path_yaw, mode, _ = plan_dubins_path(
+                start_x, start_y, start_yaw, end_x, end_y, end_yaw, curvature)
 
         curve_vertex_list = []
-        for i in range(len(path)):
-            x = path[i].pos[0]
-            y = path[i].pos[1]
+        for i in range(len(path_x)):
+            x = path_x[i]
+            y = path_y[i]
             curve_vertex_list.append((int(x), int(y)))
 
         return curve_vertex_list

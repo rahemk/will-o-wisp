@@ -62,9 +62,18 @@ class GameScreen:
     def get_do_screenshot(self):
         return self.do_screenshot, self.screenshot_index
 
-    def update(self, wow_tags, control_arcs, control_curves, sprites):
-        # Fill the screen to wipe away anything from last frame
-        self.screen.fill("black")
+    def update(self, wow_tags, control_arcs, control_curves, sprites, background_image=None):
+        if background_image is not None:
+            #image = pg.surfarray.make_surface(background_image)
+            #self.screen.blit(image, (0, 0))
+            print(self.screen)
+            print(self.screen.get_size())
+            print(self.screen.get_bitsize())
+            print(self.screen.get_bytesize())
+            pg.surfarray.blit_array(self.screen, background_image)
+        else:
+            # Fill the screen to wipe away anything from last frame
+            self.screen.fill("black")
 
         if self.debug_level > 0:
             for wow_tag in wow_tags:
@@ -113,7 +122,6 @@ class GameScreen:
         for curve in control_curves:
             pg.draw.lines(self.screen, "white", False, curve, 20)
 
-        # flip() the display to put your work on screen
         pg.display.flip()
 
         if self.do_screenshot:

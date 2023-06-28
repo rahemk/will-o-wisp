@@ -1,3 +1,6 @@
+import cv2
+import numpy as np
+from scipy import ndimage
 from math import atan2, pi
 from utils.angles import get_smallest_signed_angular_difference, normalize_angle_0_2pi
 
@@ -15,7 +18,11 @@ class Arc:
         self.start_angle = start_angle
         self.stop_angle = stop_angle
 
-class GuidanceGenerator:
+'''
+This one generates a list of arcs and curves corresponding to the controller's
+action for each tag.
+'''
+class CurveArcGenerator:
     def __init__(self, controller):
         self.controller = controller
 
@@ -30,7 +37,7 @@ class GuidanceGenerator:
             journey = journey_dict[id]
             alpha = get_smallest_signed_angular_difference(wow_tag.angle, atan2(journey.goal_y - wow_tag.y, journey.goal_x - wow_tag.x))
 
-            if abs(alpha) < pi/8:
+            if True: #abs(alpha) < pi/8:
                 # Generate curve for this tag.
                 points = self.controller.get_curve_points(journey_dict[id])
                 curves.append(points)
@@ -63,3 +70,37 @@ class GuidanceGenerator:
                 journey.start_angle = wow_tag.angle
 
         return arcs, curves
+
+'''
+This one generates an image with control curves already drawn.
+'''
+class GuidanceImageGenerator:
+    def __init__(self, width, height, controller):
+        self.width = width
+        self.height = height
+        self.controller = controller
+
+    def generate(self, wow_tags, journey_dict):
+        curves = []
+        for wow_tag in wow_tags:
+            id = wow_tag.id
+            if not id in journey_dict:
+                continue
+
+            journey = journey_dict[id]
+            alpha = get_smallest_signed_angular_difference(wow_tag.angle, atan2(journey.goal_y - wow_tag.y, journey.goal_x - wow_tag.x))
+
+            # Generate curve for this tag.
+            points = self.controller.get_curve_points(journey_dict[id])
+            curves.append(points)
+
+        # Creating this image with width rows and height columns to match
+        # pygame, even though its in violation of normal numpy convention
+        image = np.zeros((self.width, self.height, 3))
+        for curve in curves:
+            for point in curve:
+                image[point[0], point[1], :] = 2**32 - 1
+
+        #image = ndimage.grey_dilation(image, size=(10, 10))
+
+        return image

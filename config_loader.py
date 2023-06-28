@@ -22,6 +22,9 @@ class Config:
     fullscreen = None
     use_tg_calibration = None
     use_homography = None
+    tg_tag_size = None
+    tg_delta = None
+    use_homography = None
     output_width = None
     output_height = None
     screen_corners = None
@@ -49,6 +52,8 @@ class ConfigLoader:
             ConfigLoader._config.fullscreen = bool(dict['fullscreen'])
             ConfigLoader._config.use_tg_calibration = bool(dict['use_tg_calibration'])
             ConfigLoader._config.use_homography = bool(dict['use_homography'])
+            ConfigLoader._config.tg_tag_size = dict['tg_tag_size']
+            ConfigLoader._config.tg_delta = dict['tg_delta']
             ConfigLoader._config.input_width = dict['input_width']
             ConfigLoader._config.input_height = dict['input_height']
             ConfigLoader._config.output_width = dict['output_width']

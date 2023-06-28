@@ -4,6 +4,8 @@
     "fullscreen": 1,
     "use_tg_calibration": 1,
     "use_homography": 0,
+    "tg_tag_size": 35,
+    "tg_delta": 1,
     "input_width": 1920,
     "input_height": 1080,
     "output_width": 960,

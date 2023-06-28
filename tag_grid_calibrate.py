@@ -18,7 +18,6 @@ from image_processing import capture_and_preprocess, interpolate_missing_values
 if __name__ == "__main__":
 
     cfg = ConfigLoader.get()
-    tag_size = 35
     calibrate = True
 
     if cfg.show_input:
@@ -26,7 +25,7 @@ if __name__ == "__main__":
         cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
     #pp = pprint.PrettyPrinter(indent=4)
 
-    panner = TagGridPanner(cfg.output_width, cfg.output_height, tag_size, cfg.fullscreen)
+    panner = TagGridPanner(cfg.output_width, cfg.output_height, cfg.tg_tag_size, cfg.tg_delta, cfg.fullscreen)
 
     #tag_centres_image = np.zeros((cfg.output_height, cfg.output_width))
 

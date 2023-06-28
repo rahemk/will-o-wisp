@@ -15,17 +15,20 @@ from image_processing import capture_and_preprocess
 # Customize the level and controller.
 from levels import DummyLevel, SynchronyLevel, TestLevel, FirstGameLevel
 from swarmjs_level import SwarmJSLevel
-from guidance_generator import GuidanceGenerator
-#from controllers import SmoothController1
-from controllers import RRTDubinsController
-#guidance_generator = GuidanceGenerator(SmoothController1())
-guidance_generator = GuidanceGenerator(RRTDubinsController())
+#from generators import CurveArcGenerator
+from generators import GuidanceImageGenerator
+from controllers import SmoothController1
+from controllers import DubinsController
+#curve_arc_generator = CurveArcGenerator(SmoothController1())
+#guidance_generator = GuidanceGenerator(DubinsController())
 
 if __name__ == "__main__":
 
     cfg = ConfigLoader.get()
 
     game_screen = GameScreen(cfg.output_width, cfg.output_height, cfg.fullscreen)
+
+    guidance_image_generator = GuidanceImageGenerator(cfg.output_width, cfg.output_height, SmoothController1())
 
     #level = DummyLevel(cfg.output_width, cfg.output_height)
     #level = TestLevel(cfg.output_width, cfg.output_height)
@@ -86,9 +89,13 @@ if __name__ == "__main__":
         journey_dict = level.get_journey_dict(manual_movement, wow_tags)
         sprites = level.get_sprites()
 
-        arcs, curves = guidance_generator.generate(wow_tags, journey_dict)
+        #arcs, curves = curve_arc_generator.generate(wow_tags, journey_dict)
+        curve_image = guidance_image_generator.generate(wow_tags, journey_dict)
+        #cv2.imshow("curve_image", curve_image)
+        #cv2.waitKey(1)
 
-        game_screen.update(wow_tags, arcs, curves, sprites)
+        #game_screen.update(wow_tags, arcs, curves, sprites)
+        game_screen.update(wow_tags, [], [], sprites, background_image=curve_image)
 
         if do_screenshot:
             #filename_raw = f"screenshots/raw_{screenshot_index:02}.png"

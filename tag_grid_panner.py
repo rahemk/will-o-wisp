@@ -11,12 +11,14 @@ from random import random
 from wow_tag import WowTag
 
 class TagGridPanner:
-    def __init__(self, width, height, tag_size, fullscreen):
+    def __init__(self, width, height, tag_size, delta, fullscreen):
         self.width = width
         self.height = height
         self.tag_size = tag_size
+        self.delta = delta
+        print(f"width: {width}, height: {height}, tag_size: {tag_size}, delta: {delta}")
 
-        #os.environ['SDL_VIDEO_WINDOW_POS'] = "2200,0"
+        os.environ['SDL_VIDEO_WINDOW_POS'] = "2200,0"
         pg.init()
         self.screen = pg.display.set_mode((width, height), flags=pg.SCALED, vsync=1)
         if fullscreen:
@@ -137,9 +139,10 @@ class TagGridPanner:
                 tags.append(WowTag(id, x, y, 0))
                 id += 1
 
+        # Choosing a value at or above 2pi means we are not stepping through angles.
         delta_angle = 10*pi
-        delta_x = 1
-        delta_y = 1
+        delta_x = self.delta
+        delta_y = self.delta
 
         while not self.terminate:
             self.handle_events()
@@ -164,13 +167,14 @@ if __name__ == "__main__":
     width = 960
     height = 540
     tag_size = 50
+    delta = 12
 
     # This image is just a debugging tool to show the image positions
     # covered over time by the tags below.
     coverage_image = np.zeros((height, width))
     cv2.imshow("Coverage Image", coverage_image.astype(np.uint8))
 
-    panner = TagGridPanner(width, height, tag_size, False)
+    panner = TagGridPanner(width, height, tag_size, delta, False)
 
     def callback(tags):
         for tag in tags:
