@@ -32,10 +32,10 @@ if __name__ == "__main__":
 
     #guidance_image_generator = GuidanceImageGenerator(cfg.output_width, cfg.output_height, DubinsLightController())
 
-    level = DummyLevel(cfg.output_width, cfg.output_height)
+    #level = DummyLevel(cfg.output_width, cfg.output_height)
     #level = TestLevel(cfg.output_width, cfg.output_height)
     #level = SynchronyLevel(cfg.output_width, cfg.output_height)
-    #level = FirstGameLevel(cfg.output_width, cfg.output_height)
+    level = FirstGameLevel(cfg.output_width, cfg.output_height)
     #level = SwarmJSLevel(None)
 
     apriltag_detector = Detector(
