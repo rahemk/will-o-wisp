@@ -286,10 +286,14 @@ class FirstGameLevel(AbstractLevel):
         goal_sprites = []
         for id in self.journey_dict:
             journey = self.journey_dict[id]
-            goal_sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 10, 12, "green"))
-        #return self.player_bullet_sprites + self. enemy_bullet_sprites + self.deco_sprites + goal_sprites
+            goal_sprites.append(Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 20, 30, "green"))
+            goal_id_sprite = Sprite(Vector2D(journey.goal_x, journey.goal_y), Vector2D(0, 0), 0, 0, "white")
+            goal_id_sprite.text = str(id)
+            goal_sprites.append(goal_id_sprite)
 
-        return goal_sprites + self.player_bullet_sprites + self.enemy_bullet_sprites + self.deco_sprites
+        # Uncomment to display goal_sprites.
+        # return goal_sprites + self.player_bullet_sprites + self.enemy_bullet_sprites + self.deco_sprites
+        return self.player_bullet_sprites + self.enemy_bullet_sprites + self.deco_sprites
 
     def _enemies_firing_at_player(self, player_tag, wow_tags):
         '''The enemies will fire at the player if angled to potentially hit it.'''

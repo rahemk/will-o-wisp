@@ -93,8 +93,6 @@ class GameScreen:
                 self.screen.blit(text_surface, text_position)
             else:
                 if sprite.flicker:
-                    pg.draw.circle(self.screen, 'white', Vector2(sprite.centre_vec.x, sprite.centre_vec.y), sprite.outer_radius)
-                    '''
                     n_points = 10
                     points = []
                     for i in range(n_points):
@@ -103,7 +101,6 @@ class GameScreen:
                         points.append(Vector2(sprite.centre_vec.x + radius * cos(angle), \
                                             sprite.centre_vec.y + radius * sin(angle)))
                     pg.draw.polygon(self.screen, sprite.colour, points)
-                    '''
                 else:
                     pg.draw.circle(self.screen, sprite.colour, Vector2(sprite.centre_vec.x, sprite.centre_vec.y), sprite.outer_radius)
 
