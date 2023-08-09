@@ -92,14 +92,21 @@ class GameScreen:
                 text_position = Vector2(sprite.centre_vec.x, sprite.centre_vec.y) - 0.5 * Vector2(rect.width, rect.height)
                 self.screen.blit(text_surface, text_position)
             else:
-                n_points = 10
-                points = []
-                for i in range(n_points):
-                    angle = 2*pi * i / n_points
-                    radius = sprite.inner_radius + random() * (sprite.outer_radius - sprite.inner_radius)
-                    points.append(Vector2(sprite.centre_vec.x + radius * cos(angle), \
-                                          sprite.centre_vec.y + radius * sin(angle)))
-                pg.draw.polygon(self.screen, sprite.colour, points)
+                if sprite.flicker:
+                    pg.draw.circle(self.screen, 'white', Vector2(sprite.centre_vec.x, sprite.centre_vec.y), sprite.outer_radius)
+                    '''
+                    n_points = 10
+                    points = []
+                    for i in range(n_points):
+                        angle = 2*pi * i / n_points
+                        radius = sprite.inner_radius + random() * (sprite.outer_radius - sprite.inner_radius)
+                        points.append(Vector2(sprite.centre_vec.x + radius * cos(angle), \
+                                            sprite.centre_vec.y + radius * sin(angle)))
+                    pg.draw.polygon(self.screen, sprite.colour, points)
+                    '''
+                else:
+                    pg.draw.circle(self.screen, sprite.colour, Vector2(sprite.centre_vec.x, sprite.centre_vec.y), sprite.outer_radius)
+
                 # Fill the centre with black, so in the case of flames on a dying
                 # robot, it doesn't trigger movement.
                 pg.draw.circle(self.screen, "black", Vector2(sprite.centre_vec.x, sprite.centre_vec.y), sprite.inner_radius)

@@ -43,13 +43,14 @@ class Journey:
         self.goal_y = goal_y
 
 class Sprite:
-    def __init__(self, centre_vec, velocity_vec, inner_radius, outer_radius, colour, time_to_live=None):
+    def __init__(self, centre_vec, velocity_vec, inner_radius, outer_radius, colour, time_to_live=None, flicker=False):
         self.centre_vec = centre_vec
         self.velocity_vec = velocity_vec
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         self.colour = colour
         self.time_to_live = time_to_live
+        self.flicker = flicker
 
         self.terminate = False
     def update(self):
@@ -255,7 +256,7 @@ class FirstGameLevel(AbstractLevel):
 
                     vx = 20 * cos(wow_tag.angle)
                     vy = 20 * sin(wow_tag.angle)
-                    self.player_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "green", time_to_live=BULLET_TIME_TO_LIVE))
+                    self.player_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "red", time_to_live=BULLET_TIME_TO_LIVE, flicker=True))
                     self.fire_timeout_dict[wow_tag.id] = 10
 
                 continue
@@ -311,7 +312,7 @@ class FirstGameLevel(AbstractLevel):
 
                 vx = 20 * cos(wow_tag.angle)
                 vy = 20 * sin(wow_tag.angle)
-                self.enemy_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "blue", time_to_live=BULLET_TIME_TO_LIVE))
+                self.enemy_bullet_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(vx, vy), 5, 10, "blue", time_to_live=BULLET_TIME_TO_LIVE, flicker=True))
                 self.fire_timeout_dict[wow_tag.id] = 10
 
     def _check_bullet_enemy_collisions(self, wow_tags):
@@ -327,7 +328,7 @@ class FirstGameLevel(AbstractLevel):
                     if not wow_tag.id in self.graveyard_list:
                         self.graveyard_list.append(wow_tag.id)
                         self.journey_dict.pop(wow_tag.id)
-                        self.deco_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(0, 0), 50, 100, "red"))
+                        self.deco_sprites.append(Sprite(Vector2D(wow_tag.x, wow_tag.y), Vector2D(0, 0), 50, 100, "red", flicker=True))
 
     def _check_bullet_player_collisions(self, player_tag, wow_tags):
         '''Check for collision between the enemies' bullet sprites and the player.'''
@@ -339,7 +340,7 @@ class FirstGameLevel(AbstractLevel):
                 b.terminate = True
                 if player_tag.id not in self.graveyard_list:# Could just say 0, but maybe this will change.
                     self.graveyard_list.append(player_tag.id) 
-                    self.deco_sprites.append(Sprite(Vector2D(player_tag.x, player_tag.y), Vector2D(0, 0), 50, 100, "red"))
+                    self.deco_sprites.append(Sprite(Vector2D(player_tag.x, player_tag.y), Vector2D(0, 0), 50, 100, "red", flicker=True))
                     game_over_sprite = Sprite(Vector2D(self.width/2, self.height/2), Vector2D(0, 0), 0, 0, "white")
                     game_over_sprite.text = "Game Over!"
                     self.deco_sprites.append(game_over_sprite)

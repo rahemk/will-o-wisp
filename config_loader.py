@@ -6,8 +6,8 @@ import json
 import numpy as np
 
 # There are two local config files.  We'll decide which to open right here:
-#venue = 'lab'
-venue = 'macbook'
+venue = 'lab'
+#venue = 'macbook'
 
 config_dir = f'config_{venue}'
 config_filename = f'{config_dir}/config.json'
