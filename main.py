@@ -33,9 +33,9 @@ if __name__ == "__main__":
     #guidance_image_generator = GuidanceImageGenerator(cfg.output_width, cfg.output_height, DubinsLightController())
 
     #level = DummyLevel(cfg.output_width, cfg.output_height)
-    #level = TestLevel(cfg.output_width, cfg.output_height)
+    level = TestLevel(cfg.output_width, cfg.output_height)
     #level = SynchronyLevel(cfg.output_width, cfg.output_height)
-    level = FirstGameLevel(cfg.output_width, cfg.output_height)
+    #level = FirstGameLevel(cfg.output_width, cfg.output_height)
     #level = SwarmJSLevel(None)
 
     apriltag_detector = Detector(
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         homography, status = cv2.findHomography(np.array(cfg.screen_corners), np.array(output_corners))
 
     if cfg.use_tg_calibration:
-        directory = f"tg_calib_{venue}/delta_1"
+        directory = f"tg_calib_{venue}/delta_{cfg.tg_delta}"
 
         tg_calib_count = np.load(f"{directory}/tg_calib_count_interp.npy")
         tg_calib_x = np.load(f"{directory}/tg_calib_x_filtered.npy")
