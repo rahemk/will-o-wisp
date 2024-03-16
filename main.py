@@ -119,7 +119,7 @@ if __name__ == "__main__":
             cv2.waitKey(10)
 
         elapsed = time.time() - start_time
-        #print(f"loop elapsed time: {elapsed}")
+        print(f"loop elapsed time: {elapsed}")
 
         #time.sleep(0.1)
 
