@@ -15,7 +15,6 @@ from config_loader import venue
 
 # Customize the level and controller.
 from levels import DummyLevel, SynchronyLevel, TestLevel, FirstGameLevel
-from swarmjs_level import SwarmJSLevel
 from generators import CurveArcGenerator
 #from generators import GuidanceImageGenerator
 from controllers import SmoothController1
@@ -36,7 +35,6 @@ if __name__ == "__main__":
     level = TestLevel(cfg.output_width, cfg.output_height)
     #level = SynchronyLevel(cfg.output_width, cfg.output_height)
     #level = FirstGameLevel(cfg.output_width, cfg.output_height)
-    #level = SwarmJSLevel(None)
 
     apriltag_detector = Detector(
        families="tag36h11",
