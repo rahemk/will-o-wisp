@@ -14,7 +14,7 @@ from image_processing import capture_and_preprocess
 from config_loader import venue
 
 # Customize the level and controller.
-from levels import DummyLevel, SynchronyLevel, TestLevel, FirstGameLevel
+from levels import DummyLevel, SynchronyLevel, TestLevel, FirstGameLevel, VersusGameLevel
 from generators import CurveArcGenerator
 #from generators import GuidanceImageGenerator
 from controllers import SmoothController1
@@ -32,9 +32,10 @@ if __name__ == "__main__":
     #guidance_image_generator = GuidanceImageGenerator(cfg.output_width, cfg.output_height, DubinsLightController())
 
     #level = DummyLevel(cfg.output_width, cfg.output_height)
-    level = TestLevel(cfg.output_width, cfg.output_height)
+    #level = TestLevel(cfg.output_width, cfg.output_height)
     #level = SynchronyLevel(cfg.output_width, cfg.output_height)
     #level = FirstGameLevel(cfg.output_width, cfg.output_height)
+    level = VersusGameLevel(cfg.output_width, cfg.output_height)
 
     apriltag_detector = Detector(
        families="tag36h11",
@@ -63,7 +64,8 @@ if __name__ == "__main__":
         cv2.namedWindow(input_window_name, cv2.WINDOW_NORMAL)
     #pp = pprint.PrettyPrinter(indent=4)
 
-    cap = cv2.VideoCapture(cfg.video_channel)
+    cap = cv2.VideoCapture(cfg.video_channel, cv2.CAP_DSHOW)
+    cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # Turn off autofocus
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, cfg.input_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cfg.input_height)
 
@@ -81,14 +83,30 @@ if __name__ == "__main__":
         wow_tags = raw_tags_to_wow_tags(raw_tags)
 
         game_screen.handle_events()
+
+        if game_screen.get_restart():
+            if isinstance(level, FirstGameLevel):
+                level = FirstGameLevel(cfg.output_width, cfg.output_height)
+            elif isinstance(level, VersusGameLevel):
+                level = VersusGameLevel(cfg.output_width, cfg.output_height)
+            game_screen.restart = False
+
         do_screenshot, screenshot_index = game_screen.get_do_screenshot()
 
-        manual_movement = game_screen.get_movement()
+        if isinstance(level, VersusGameLevel):
+            manual_movement = {
+                "p1": game_screen.get_movement_for_player1(),
+                "p2": game_screen.get_movement_for_player2()
+            }
+        else:
+            manual_movement = game_screen.get_movement_for_player1()
+
 
         # The level is responsibility for determine the application's evolution.
         # This is communicated in a dictionary of journeys for tags (i.e. robots)
         # and a list of sprites which are graphical elements.
         journey_dict = level.get_journey_dict(manual_movement, wow_tags)
+
         sprites = level.get_sprites()
 
         arcs, curves = curve_arc_generator.generate(wow_tags, journey_dict)
@@ -96,7 +114,7 @@ if __name__ == "__main__":
         #cv2.imshow("curve_image", curve_image)
         #cv2.waitKey(1)
 
-        game_screen.update(wow_tags, arcs, curves, sprites)
+        game_screen.update(wow_tags, arcs, curves, sprites, game_over=getattr(level, "game_over", False), level=level)
         #game_screen.update(wow_tags, [], [], sprites, background_image=curve_image)
 
         if do_screenshot:
