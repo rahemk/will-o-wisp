@@ -1,4 +1,4 @@
-Will-o-Wisp
+## Will-o-Wisp
 
 This is a slightly improved version of the Will-o-Wisp robotics game, originally developed by https://github.com/avardy. This version includes:
 
